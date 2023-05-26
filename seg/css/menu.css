@@ -1,0 +1,211 @@
+TD
+{
+    FONT-SIZE: 9px;
+    FONT-FAMILY: Verdana, arial, helvetica
+}
+P
+{
+    FONT-SIZE: 12px;
+    FONT-FAMILY: arial,helvetica
+}
+B
+{
+    FONT-SIZE: 12px;
+    FONT-FAMILY: arial,helvetica
+}
+INPUT
+{
+    FONT-SIZE: 12px;
+    FONT-FAMILY: arial,helvetica
+}
+DIV
+{
+    FONT-SIZE: 12px;
+    FONT-FAMILY: arial,helvetica
+}
+.clCMEvent
+{
+    Z-INDEX: 300;
+    LEFT: 0px;
+    VISIBILITY: hidden;
+    WIDTH: 100%;
+    //CLIP: rect(0px, 100%, 100%, 0px);
+    POSITION: absolute;
+    TOP: 0px;
+    HEIGHT: 100%
+}
+.clCMAbs
+{
+    LEFT: 0px;
+    VISIBILITY: hidden;
+    WIDTH: 10px;
+    POSITION: absolute;
+    TOP: 0px;
+    HEIGHT: 10px
+}
+.clT
+{
+    OVERFLOW: hidden;
+    WIDTH: 130px;
+    CURSOR: pointer;
+    POSITION: absolute;
+    HEIGHT: 25px
+}
+.clTover
+{
+    OVERFLOW: hidden;
+    WIDTH: 130px;
+    CURSOR: pointer;
+    POSITION: absolute;
+    HEIGHT: 25px
+}
+.clS
+{
+    OVERFLOW: hidden;
+    WIDTH: 130px;
+    CURSOR: pointer;
+    POSITION: absolute;
+    HEIGHT: 25px
+}
+.clSover
+{
+    OVERFLOW: hidden;
+    WIDTH: 130px;
+    CURSOR: pointer;
+    POSITION: absolute;
+    HEIGHT: 25px
+}
+.clS2
+{
+    OVERFLOW: hidden;
+    WIDTH: 130px;
+    CURSOR: pointer;
+    POSITION: absolute;
+    HEIGHT: 25px
+}
+.clS2over
+{
+    OVERFLOW: hidden;
+    WIDTH: 130px;
+    CURSOR: pointer;
+    POSITION: absolute;
+    HEIGHT: 25px
+}
+.clT
+{
+    PADDING-RIGHT: 4px;
+    PADDING-LEFT: 4px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12px;
+    PADDING-BOTTOM: 4px;
+    PADDING-TOP: 4px
+}
+.clTover
+{
+    PADDING-RIGHT: 4px;
+    PADDING-LEFT: 4px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12px;
+    PADDING-BOTTOM: 4px;
+    PADDING-TOP: 4px
+}
+.clT
+{
+    COLOR: white
+}
+.clTover
+{
+    COLOR: #fcce55
+}
+.clS
+{
+    PADDING-RIGHT: 2px;
+    PADDING-LEFT: 2px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 11px;
+    PADDING-BOTTOM: 2px;
+    PADDING-TOP: 2px
+}
+.clSover
+{
+    PADDING-RIGHT: 2px;
+    PADDING-LEFT: 2px;
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 11px;
+    PADDING-BOTTOM: 2px;
+    PADDING-TOP: 2px
+}
+.clS2
+{
+    PADDING-RIGHT: 2px;
+    PADDING-LEFT: 2px;
+    FONT-SIZE: 11px;
+    PADDING-BOTTOM: 2px;
+    PADDING-TOP: 2px
+}
+.clS2over
+{
+    PADDING-RIGHT: 2px;
+    PADDING-LEFT: 2px;
+    FONT-SIZE: 11px;
+    PADDING-BOTTOM: 2px;
+    PADDING-TOP: 2px
+}
+.clS
+{
+    COLOR: #006699;
+    BACKGROUND-COLOR: #cddbeb;
+    background-color: #CDDBEB
+}
+.clS2
+{
+    COLOR: #006699;
+    BACKGROUND-COLOR: #cddbeb;
+    background-color: #CDDBEB
+}
+.clSover
+{
+    COLOR: #fcce55
+}
+.clS2over
+{
+    COLOR: #fcce55
+}
+.clSover
+{
+    BACKGROUND-COLOR: #336699;
+    background-color: #336699
+}
+.clS2over
+{
+    BACKGROUND-COLOR: #336699;
+    background-color: #336699
+}
+.clTover
+{
+    BACKGROUND-COLOR: #336699;
+    background-color: #336699
+}
+.clB
+{
+    BACKGROUND-COLOR: #336699;
+    background-color: #336699
+}
+.clBar
+{
+    BACKGROUND-COLOR: #336699;
+    background-color: #336699
+}
+.clB
+{
+    Z-INDEX: 300;
+    VISIBILITY: hidden;
+    POSITION: absolute
+}
+.clBar
+{
+    VISIBILITY: hidden;
+    WIDTH: 10px;
+    POSITION: absolute;
+    HEIGHT: 10px
+}

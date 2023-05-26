@@ -1,0 +1,57 @@
+td {
+	font-family: verdana,arial;
+	font-style: normal;
+	font-size: 16px;
+}
+
+b {
+	font-family: verdana,arial;
+	font-style: normal;
+	font-size: 16px;
+}
+
+input,
+select {
+	font-size: 16px;
+}
+
+.light {
+	font-size:16px;
+	font-family :  verdana,arial;
+}
+
+.button_logis { 
+	background-color: goldenrod; 
+	color:#000000; font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 16px; 
+	font-weight: bold; 
+	height: 22px; 
+}
+
+.button_financial { 
+	background-color: #00CC99; 
+	color:#000000; font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 16px; 
+	font-weight: bold; 
+	height: 22px; 
+}
+
+.button_trading { 
+	background-color: goldenrod; 
+	color:#000000; font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 16px; 
+	font-weight: bold; 
+	height: 22px; 
+}
+
+.button_observation { 
+	background-color: #99CCFF; 
+	color:#000000; font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 16px; 
+	font-weight: bold; 
+	height: 22px; 
+}
+
+div.messages {
+	font-size: 16px; 
+}

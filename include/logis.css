@@ -1,0 +1,264 @@
+/*   ##GENERAL##   */
+a
+{
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+input:disabled
+{
+    cursor: not-allowed;
+}
+
+.buttonsBlue
+{
+    background-color: #223F94;
+    color: #FFFFFF;
+    font-family: "Roboto",sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+    height: 19px;
+}
+.lblMSG
+{
+    align-content: center;
+    color: red;
+    font-size: 11.5px;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+}
+.link_cursor
+{
+    cursor: pointer;
+}
+.logo_excel
+{
+    height: 16px;
+    position: absolute;
+    width: 16px;
+}
+.logo_excel:hover
+{
+    height: 18px;
+    width: 18px;
+}
+.logo_excel_disabled
+{
+    cursor: not-allowed;
+    filter: grayscale(1);
+    height: 16px;
+    position: absolute;
+    width: 16px;
+}
+.logo-logis
+{
+    background-color: none !important;
+    display: block;
+    float: left;
+    margin-right: 30px;
+}
+#dvloading
+{
+    background-color: aliceblue;
+    color: -webkit-focus-ring-color;
+    cursor: wait;
+    height: 100%;
+    opacity: 0.2;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    z-index: 10;
+}
+
+
+/*   ##TABLAS##   */
+.trHeader
+{
+    background-color: #223F94;
+    color: #FFFFFF;
+    font-family: "Roboto",sans-serif;
+    font-size: 12px;
+    text-align: center;
+}
+.trHeader > th
+{
+    background-color: #223F94;
+    color: #FFFFFF;
+    font-family: "Roboto",sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: bold;
+    text-align: center;
+}
+.trHeader > td
+{
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: bold;
+}
+td
+{
+    font-weight: normal !important;
+}
+.tblBody > tbody > tr > td
+{
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-size: 10px;
+}
+.tblBody > tbody > tr
+{
+    cursor: default;
+}
+.tblBody > tbody > tr:hover
+{
+    background-color: #E6E3DD;
+}
+.trBgColor
+{
+    background-color: #F6F6F6;
+}
+
+.tblContent{}
+.tblContent > thead > tr
+{
+    background-color: #223F94;
+    color: #FFFFFF;
+    font-family: "Roboto",sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: bold;
+    text-align: center;
+}
+.tblContent>tbody
+{
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-size: 10px;
+}
+.tblContent > tbody > tr
+{
+    cursor: default;
+}
+.tblContent > tbody > tr:nth-child(odd) > td,
+.tblContent > tbody > tr:nth-child(odd) > th
+{
+    background-color: #FFFFFF;
+}
+.tblContent > tbody > tr:nth-child(even) > td,
+.tblContent > tbody > tr:nth-child(even) > th
+{
+    background-color: #F6F6F6;
+}
+.tblContent tbody tr:nth-child(odd):hover td, tbody tr.odd:hover td,
+.tblContent tbody tr:nth-child(even):hover td, tbody tr.even:hover td {
+    background-color: #E6E3DD;
+}
+
+
+/*   ##MENU##   */
+.dvMenu
+{
+    display: block;
+    padding-left: 20px;
+    text-align: left;
+}
+.contenedorMenu
+{
+    background-image: url(../../images/header_flash.jpg);
+    background-repeat: no-repeat;
+    background-position: right;
+    background-size: auto 100%;
+    font-size: 14px;
+    height: 55px;
+    line-height: 50px;
+    margin: 0 auto;
+    width: 100%;
+}
+.contenedorMenu #menu
+{
+    font-weight: 500;
+    margin: 0;
+    margin-right: 100px;
+    padding: 0;
+}
+ul
+{
+    display: block;
+    font-size: large;
+    list-style-type: disc;
+    margin-block-end: 1em;
+    margin-block-start: 1em;
+    margin-inline-end: 0px;
+    margin-inline-start: 0px;
+    padding-inline-start: 40px;
+}
+.contenedorMenu #menu li
+{
+    border-bottom-color: gainsboro;
+    border-right: 1px solid;
+    border-right-color: gainsboro;
+    border-top-color: gainsboro;
+    color: #000;
+    float: left;
+    font-family: "Roboto", sans-serif;
+    list-style: none;
+    padding: 0;
+    padding-left: 10px;
+    padding-right: 5px;
+    position: relative;
+    text-align: left;
+    vertical-align: middle;
+}
+.contenedorMenu #menu li:hover
+{
+    background-color: #435B6E;
+    color: #FFFFFF;
+}
+.contenedorMenu #menu li > img
+{
+    background-color: none;
+}
+.contenedorMenu .dvMenu #menu li > a
+{
+    color: #000;
+    text-decoration: none;
+}
+.contenedorMenu .dvMenu #menu li > a:hover
+{
+    background-color: #435B6E;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+.tblMenu
+{
+    font-family: "Roboto", sans-serif;
+    padding: 5px;
+}
+.tblMenu > tbody > tr > td
+{
+    border-bottom-color: gainsboro;
+    border-right-color: gainsboro;
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-top-color: gainsboro;
+    float: left;
+    list-style: none;
+    padding: 0;
+    padding-left: 10px;
+    padding-right: 5px;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+}
+.tblMenu > tbody > tr > td:hover
+{
+    background-color: #E6E3DD;
+}
+.tblMenu > tbody > tr > td > a
+{
+    color: #000000;
+    text-decoration: none;
+}

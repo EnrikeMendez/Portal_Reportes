@@ -1,0 +1,38 @@
+td{
+	font-family: verdana,arial;
+	font-style: normal;
+	font-size: 8pt;
+}
+
+.datos {
+	font-weight : bold;
+}
+
+.linea_titulo {
+	background-color : GoldenRod;
+	font-weight : bold;
+}
+
+.paysign {
+	font-size:12pt;
+	font-weight:bold;
+	font-family : sans-serif;
+	color : Red;
+}
+
+.light {
+	font-size:8pt;
+	font-family : sans-serif;
+}
+
+.escondido {display:none;}
+.visible {display:;}
+
+.buttonsOrange { 
+	background-color: goldenrod; 
+	color:#000000; font-family: Verdana, Arial, Helvetica, sans-serif; 
+	font-size: 10px; 
+	font-weight: bold; 
+	height: 19px; 
+	font-color: #000000 
+}
