@@ -325,7 +325,7 @@ end if
         <button id="btn_sumar" onclick="WCFJSON();">Sumar</button>
         <button id="btn_test" onclick="tmp_ws();">test</button>
 
-
+        <table id="tblResultado" name="tblResultado" class="tblContent"></table>
 
 
         <script type="text/javascript">
@@ -428,7 +428,8 @@ end if
                 numero1 = document.getElementById("val_A").value;
                 numero2 = document.getElementById("val_B").value;
 
-                const url = "http://localhost:56527/Report_Service.svc/GetData?number1=" + numero1 + "&number2=" + numero2;
+                //const url = "http://localhost:12635/Report_Service.svc/GetData?number1=" + numero1 + "&number2=" + numero2;
+                const url = "http://localhost:51687/Report_Service.svc/GetConsultaErrores";
                 var someHandler = "ok";
 
                 xhr.onreadystatechange = function () {
@@ -444,8 +445,47 @@ end if
             }
             function mostrarResultado(wsResponseText) {
                 var objResult = JSON.parse(wsResponseText);
-                var info = objResult.GetDataResult;
-                $("#lblResult").text("El resultado de tu suma es: " + info);
+                var info = objResult.GetConsultaErroresResult;
+                var arrMargy = JSON.parse(info);
+                $("#lblResult").text("El resultado de tu suma es: " + arrMargy[0].NAME);
+                var i = 0;
+                var htmlTable = "";
+
+                htmlTable = htmlTable + "<thead>";
+                htmlTable = htmlTable + "    <tr align='center'>";
+                htmlTable = htmlTable + "        <th>Nombre</th>";
+                htmlTable = htmlTable + "        <th class='width - 8p'>ID cron</th>";
+                htmlTable = htmlTable + "        <th class='width - 8p'>Error</th>";
+                htmlTable = htmlTable + "        <!--<th class='width - 10p'>Lista Correo</th>-->";
+                htmlTable = htmlTable + "        <th>Log</th>";
+                htmlTable = htmlTable + "        <th class='width - 12p'>Fecha</th>";
+                htmlTable = htmlTable + "    </tr>";
+                htmlTable = htmlTable + "</thead>";
+
+                for (i = 0; i < arrMargy.length; i++) {
+                    htmlTable = htmlTable + "<tr>";
+                    htmlTable = htmlTable + "<td>";
+                    htmlTable = htmlTable + arrMargy[i].NAME;
+                    htmlTable = htmlTable + "</td>";
+                    htmlTable = htmlTable + "<td>";
+                    htmlTable = htmlTable + arrMargy[i].ID_CRON;
+                    htmlTable = htmlTable + "</td>";
+                    htmlTable = htmlTable + "<td>";
+                    htmlTable = htmlTable + arrMargy[i].ID_CHRON_ERROR;
+                    htmlTable = htmlTable + "</td>";
+                    htmlTable = htmlTable + "<!--<td>";
+                    htmlTable = htmlTable + arrMargy[i].TIPO_ERROR;
+                    htmlTable = htmlTable + "</td>-->";
+                    htmlTable = htmlTable + "<td>";
+                    htmlTable = htmlTable + arrMargy[i].LOG;
+                    htmlTable = htmlTable + "</td>";
+                    htmlTable = htmlTable + "<td>";
+                    htmlTable = htmlTable + arrMargy[i].HORA;
+                    htmlTable = htmlTable + "</td>";
+                    htmlTable = htmlTable + "</tr>";
+                }
+
+                $("#tblResultado").html(htmlTable);
             }
         </script>
 
