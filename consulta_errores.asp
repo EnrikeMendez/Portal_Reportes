@@ -89,8 +89,22 @@ End Function
     <br />
 
     <!--ORP: WS AJAX-->
-    <table width="100%" border="0" id="select_reporte" class="tblContent"></table>
+    <table width="100%" border="0" id="select_reporte" class="tblContent">
+        <thead>
+            <tr align='center'>
+                <th>Nombre</th>
+                <th class='width-8p'>ID cron</th>
+                <th class='width-8p'>Error</th>
+                <!--<th class='width-10p'>Lista Correo</th>-->
+                <th>Log</th>
+                <th class='width-12p'>Fecha</th>
+            </tr>
+        </thead>
+        <tbody id="print_data">
+        </tbody>
+    </table>
     <!--ORP: WS AJAX-->
+
 
     <div id="clockCounter" name="clockCounter" class="fixedBottomRightLabel">
         La p&aacute;gina se actualizar&aacute en
@@ -225,34 +239,27 @@ End Function
             var i = 0;
             var htmlTable = "";
 
-            htmlTable = htmlTable + "<thead>";
-            htmlTable = htmlTable + "    <tr align='center'>";
-            htmlTable = htmlTable + "        <th>Nombre</th>";
-            htmlTable = htmlTable + "        <th class='width-8p'>ID cron</th>";
-            htmlTable = htmlTable + "        <th class='width-8p'>Error</th>";
-            htmlTable = htmlTable + "        <!--<th class='width-10p'>Lista Correo</th>-->";
-            htmlTable = htmlTable + "        <th>Log</th>";
-            htmlTable = htmlTable + "        <th class='width-12p'>Fecha</th>";
-            htmlTable = htmlTable + "    </tr>";
-            htmlTable = htmlTable + "</thead>";
-            htmlTable = htmlTable + "<tbody>";
 
-            for (i = 0; i < arrayData.length; i++) {
+            if (arrayData.length == 0) {
 
-                if (arrayData.length == 0) {
+                htmlTable = htmlTable + "<tr class='center'>";
+                htmlTable = htmlTable + "	<td colspan='5' class='center'>";
+                htmlTable = htmlTable + "		No hay Errores registrados.";
+                htmlTable = htmlTable + "	</td>";
+                htmlTable = htmlTable + "</tr>";
+            }
+            else {
 
-                    htmlTable = htmlTable + "<tr class='center'>";
-                    htmlTable = htmlTable + "	<td colspan='5' class='center'>";
-                    htmlTable = htmlTable + "		No hay Errores registrados.";
-                    htmlTable = htmlTable + "	</td>";
-                    htmlTable = htmlTable + "</tr>";
-                }
-                else {
+                for (i = 0; i < arrayData.length; i++) {
+
+                    htmlTable = "";
 
                     htmlTable = htmlTable + "<tr> \n\n";
 
+                   // console.log(arrayData[0, i].toString());
+
                     htmlTable = htmlTable + "<td>";
-                    if (arrayData[0, i].toString().indexOf("@") == -1) {
+                    if (arrayData[i].NAME.includes("@", 1) == false) {
                         htmlTable = htmlTable + arrayData[i].NAME + "\n\n";
                     } else {
                         htmlTable = htmlTable + "<i>Reporte generado bajo demanda</i> \n\n";
@@ -283,10 +290,9 @@ End Function
 
                     htmlTable = htmlTable + "</tr>";
 
+                    $("#print_data").append(htmlTable);
                 }
-                htmlTable = htmlTable + "</tbody>";
             }
-            $("#select_reporte").html(htmlTable);
         }
         $(document).ready(ftn_GetConsultaErrores);
             //< !--ORP: WS AJAX-- >
