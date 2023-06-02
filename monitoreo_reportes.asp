@@ -114,39 +114,39 @@ End Function
 		</div>
 
 		<%
-		'<<MRG
-		'El lunes se mostrarán desde el viernes por la tarde:
-			if Weekday(nowDay,1) = 2 then
-				backDays = 3
-			end if
-		'MRG>>
-			SQL = "select  cron.id_rapport as id_cron, TO_char(cron.last_execution,'DD/MON/YYYY HH24:MI') as hora_creacion, rep_detalle.name,  " & VbCrLf 
-			SQL = SQL & " rep.id_rep || ' - ' ||rep.name as tipo_reporte, " & VbCrLf 
-			SQL = SQL & " (cron.MOIS || cron.JOUR_SEMAINE || cron.HEURES || cron.MINUTES || cron.JOURS) as programacion, " & VbCrLf 
-			SQL = SQL & "  cron.priorite, cron.test, cron.in_progress, rep_detalle.id_cron, " & VbCrLf 
-			SQL = SQL & "  (select error.log from rep_chron_error error, rep_detalle_reporte reporte where trunc(error.date_created) = trunc(sysdate) and error.id_reporte = reporte.id_cron and error.id_reporte = rep_detalle.id_cron and rownum = 1)as errores " & VbCrLf 
-			SQL = SQL & "  , cron.id_chron, reprocesos.nombre_proceso ,reprocesos.status" & VbCrLf 
-			SQL = SQL & "  from REP_CHRON cron " & VbCrLf 
-			SQL = SQL & "  JOIN rep_detalle_reporte rep_detalle on cron.id_rapport = rep_detalle.id_cron   " & VbCrLf 
-			SQL = SQL & "  JOIN rep_reporte rep on rep.ID_REP = rep_detalle.id_rep  " & VbCrLf 
-			SQL = SQL & "  LEFT OUTER JOIN rep_reprocesos_reporte reprocesos on reprocesos.id_cron = cron.id_rapport  " & VbCrLf 
-			SQL = SQL & "  where cron.active <> 0 " & VbCrLf 
-			'<<MRG
-			'SQL = SQL & "  and trunc(cron.last_execution) = trunc(sysdate) " & VbCrLf
-			SQL	=	SQL	&	"AND cron.last_execution	between sysdate - " & backDays & " and sysdate "	&	VbCrLf
-			'MRG>>
-			SQL = SQL & "  order by  cron.in_progress desc, hora_creacion desc " 
-			
-			arrayRS = GetArrayRS(SQL)
-
-			'< -- CHG-DESA-27042022-01
-			'invoca el seteo dinamico de prioridad
+		''<<MRG
+		''El lunes se mostrarán desde el viernes por la tarde:
+		'	if Weekday(nowDay,1) = 2 then
+		'		backDays = 3
+		'	end if
+		''MRG>>
+		'	SQL = "select  cron.id_rapport as id_cron, TO_char(cron.last_execution,'DD/MON/YYYY HH24:MI') as hora_creacion, rep_detalle.name,  " & VbCrLf 
+		'	SQL = SQL & " rep.id_rep || ' - ' ||rep.name as tipo_reporte, " & VbCrLf 
+		'	SQL = SQL & " (cron.MOIS || cron.JOUR_SEMAINE || cron.HEURES || cron.MINUTES || cron.JOURS) as programacion, " & VbCrLf 
+		'	SQL = SQL & "  cron.priorite, cron.test, cron.in_progress, rep_detalle.id_cron, " & VbCrLf 
+		'	SQL = SQL & "  (select error.log from rep_chron_error error, rep_detalle_reporte reporte where trunc(error.date_created) = trunc(sysdate) and error.id_reporte = reporte.id_cron and error.id_reporte = rep_detalle.id_cron and rownum = 1)as errores " & VbCrLf 
+		'	SQL = SQL & "  , cron.id_chron, reprocesos.nombre_proceso ,reprocesos.status" & VbCrLf 
+		'	SQL = SQL & "  from REP_CHRON cron " & VbCrLf 
+		'	SQL = SQL & "  JOIN rep_detalle_reporte rep_detalle on cron.id_rapport = rep_detalle.id_cron   " & VbCrLf 
+		'	SQL = SQL & "  JOIN rep_reporte rep on rep.ID_REP = rep_detalle.id_rep  " & VbCrLf 
+		'	SQL = SQL & "  LEFT OUTER JOIN rep_reprocesos_reporte reprocesos on reprocesos.id_cron = cron.id_rapport  " & VbCrLf 
+		'	SQL = SQL & "  where cron.active <> 0 " & VbCrLf 
+		'	'<<MRG
+		'	'SQL = SQL & "  and trunc(cron.last_execution) = trunc(sysdate) " & VbCrLf
+		'	SQL	=	SQL	&	"AND cron.last_execution	between sysdate - " & backDays & " and sysdate "	&	VbCrLf
+		'	'MRG>>
+		'	SQL = SQL & "  order by  cron.in_progress desc, hora_creacion desc " 
+		'	
+		'	arrayRS = GetArrayRS(SQL)
+		'
+		'	'< -- CHG-DESA-27042022-01
+		'	'invoca el seteo dinamico de prioridad
 			call sub_procesos_prioridad_dinamica()
 			' CHG-DESA-27042022-01 -- >
 
-			if not IsArray(arrayRS) then
-				Response.Write "<script>MinutosRecargarPagina = totLabel;</script>"
-			end if
+		''	if not IsArray(arrayRS) then
+		''		Response.Write "<script>MinutosRecargarPagina = totLabel;</script>"
+		''	end if
 		%>
 		
 		<form action="monitoreo_reportes.asp" method="post">
@@ -191,46 +191,46 @@ End Function
 						<th style="text-align:right;">Error</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="tbResult">
 				<%
-					if not IsArray(arrayRS) then
-						Response.Write "<tr class='center'>"
-						Response.Write "	<td colspan='9' class='center'>"
-						Response.Write "		No hay Reportes en ejecuci&oacute;n."
-						Response.Write "	</td>"
-						Response.Write "</tr>"
-					else
-						for i = 0 to UBound(arrayRS,2)
-							
-							if arrayRS(7,i) <> "0" then
-								Response.Write "<tr class='success-tr'>"
-							elseif arrayRS(9,i) <> "" then
-								Response.Write "<tr class='error-tr'>"
-							else
-								if Int(i / 2) * 2 = i then 
-									Response.Write "<tr class='tr-F2F2F2'>"
-								else 
-									Response.Write "<tr>"
-								end if 
-							end if
-					
-							Response.Write "	<td align='center'><input type='checkbox' name='reporte[]' value='" & arrayRS(10,i) & "'></td>" & vbCrLf & vbTab
-							Response.Write "	<td align='center'>"& arrayRS(0,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td>" & arrayRS(1,i) & "</td>"
-							Response.Write "	<td aling='left'>"& arrayRS(2,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td aling='left'>"& arrayRS(3,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td align='center'>"& arrayRS(4,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td align='right'>"& arrayRS(5,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td align='right'>"& arrayRS(7,i) &"</td>" & vbCrLf & vbTab
-							if arrayRS(9,i)  <> "" then 
-								Response.Write "	<td align='right'><button type='button' class='modal-click' data-idcron='"& arrayRS(8,i) &"' data-status='"& arrayRS(12,i) &"'>Ver error</button></td>" & vbCrLf & vbTab
-							else	
-								Response.Write "	<td align='right'></td>" & vbCrLf & vbTab
-							end if 
-							
-							Response.Write "<tr>"
-						next
-					end if
+				''	if not IsArray(arrayRS) then
+				''		Response.Write "<tr class='center'>"
+				''		Response.Write "	<td colspan='9' class='center'>"
+				''		Response.Write "		No hay Reportes en ejecuci&oacute;n."
+				''		Response.Write "	</td>"
+				''		Response.Write "</tr>"
+				''	else
+				''		for i = 0 to UBound(arrayRS,2)
+				''			
+				''			if arrayRS(7,i) <> "0" then
+				''				Response.Write "<tr class='success-tr'>"
+				''			elseif arrayRS(9,i) <> "" then
+				''				Response.Write "<tr class='error-tr'>"
+				''			else
+				''				if Int(i / 2) * 2 = i then 
+				''					Response.Write "<tr class='tr-F2F2F2'>"
+				''				else 
+				''					Response.Write "<tr>"
+				''				end if 
+				''			end if
+				''	
+				''			Response.Write "	<td align='center'><input type='checkbox' name='reporte[]' value='" & arrayRS(10,i) & "'></td>" & vbCrLf & vbTab
+				''			Response.Write "	<td align='center'>"& arrayRS(0,i) &"</td>" & vbCrLf & vbTab
+				''			Response.Write "	<td>" & arrayRS(1,i) & "</td>"
+				''			Response.Write "	<td aling='left'>"& arrayRS(2,i) &"</td>" & vbCrLf & vbTab
+				''			Response.Write "	<td aling='left'>"& arrayRS(3,i) &"</td>" & vbCrLf & vbTab
+				''			Response.Write "	<td align='center'>"& arrayRS(4,i) &"</td>" & vbCrLf & vbTab
+				''			Response.Write "	<td align='right'>"& arrayRS(5,i) &"</td>" & vbCrLf & vbTab
+				''			Response.Write "	<td align='right'>"& arrayRS(7,i) &"</td>" & vbCrLf & vbTab
+				''			if arrayRS(9,i)  <> "" then 
+				''				Response.Write "	<td align='right'><button type='button' class='modal-click' data-idcron='"& arrayRS(8,i) &"' data-status='"& arrayRS(12,i) &"'>Ver error</button></td>" & vbCrLf & vbTab
+				''			else	
+				''				Response.Write "	<td align='right'></td>" & vbCrLf & vbTab
+				''			end if 
+				''			
+				''			Response.Write "<tr>"
+				''		next
+				''	end if
 				%>
 				</tbody>
 			</table>
@@ -249,34 +249,34 @@ End Function
 						<th>Fecha</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="tbModal">
 					<% 
-						if IsArray(arrayRS) then
-							SQL = "select * from rep_chron_error where id_reporte in( "
-							bandera = 0
-							for i = 0 to UBound(arrayRS,2)
-								if(not IsArray(arrayRS(8,i))) then
-									if bandera = 0 then 
-										SQL = SQL & arrayRS(0,i) 
-										bandera = 1
-									end if 
-									SQL = SQL & ", " & arrayRS(0,i) 
-								end if
-							next
-							SQL = SQL & ") and trunc(date_created) = trunc(sysdate) " 
-							
-							arrayRS2 = GetArrayRS(SQL)
-							
-							if IsArray(arrayRS2) then
-								for i2 = 0 to UBound(arrayRS2,2)
-									Response.Write "<tr class='tr-moda tr-moda-"& arrayRS2(1,i2) &"'>"
-									Response.Write "	<td align='center'>"& arrayRS2(1,i2) &"</td>" & vbCrLf & vbTab
-									Response.Write "	<td align='left'>"& arrayRS2(4,i2) &"</td>" & vbCrLf & vbTab
-									Response.Write "	<td align='center'>"& arrayRS2(6,i2) &"</td>" & vbCrLf & vbTab
-									Response.Write "<tr>"
-								next
-							end if
-						end if
+						''if IsArray(arrayRS) then
+						''	SQL = "select * from rep_chron_error where id_reporte in( "
+						''	bandera = 0
+						''	for i = 0 to UBound(arrayRS,2)
+						''		if(not IsArray(arrayRS(8,i))) then
+						''			if bandera = 0 then 
+						''				SQL = SQL & arrayRS(0,i) 
+						''				bandera = 1
+						''			end if 
+						''			SQL = SQL & ", " & arrayRS(0,i) 
+						''		end if
+						''	next
+						''	SQL = SQL & ") and trunc(date_created) = trunc(sysdate) " 
+						''	
+						''	arrayRS2 = GetArrayRS(SQL)
+						''	
+						''	if IsArray(arrayRS2) then
+						''		for i2 = 0 to UBound(arrayRS2,2)
+						''			Response.Write "<tr class='tr-moda tr-moda-"& arrayRS2(1,i2) &"'>"
+						''			Response.Write "	<td align='center'>"& arrayRS2(1,i2) &"</td>" & vbCrLf & vbTab
+						''			Response.Write "	<td align='left'>"& arrayRS2(4,i2) &"</td>" & vbCrLf & vbTab
+						''			Response.Write "	<td align='center'>"& arrayRS2(6,i2) &"</td>" & vbCrLf & vbTab
+						''			Response.Write "<tr>"
+						''		next
+						''	end if
+						''end if
 						
 					%>
 				</tbody>
@@ -464,3 +464,135 @@ End Function
 %>	
 
 </html>
+        <script type="text/javascript">
+
+            var Type;
+            var Url;
+            var Data;
+            var ContentType;
+            var DataType;
+            var ProcessData;
+
+            
+            $(document).ready(
+                function () {
+                    tmp_ws();
+                }
+            );
+            function tmp_ws() {
+                const xhr = new XMLHttpRequest();
+                const url = "http://localhost:62663/Report_Service.svc/GetMonitoreoRep";
+                var someHandler = "ok";
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+                        mostrarResultado(xhr.responseText);
+                    }
+                }
+
+                xhr.open("GET", url, true);
+                xhr.send();
+            }
+			function mostrarResultado(wsResponseText) {
+				var objResult = JSON.parse(wsResponseText);
+				var info = objResult.GetMonitoreoRepResult;
+				var arrayRS3 = JSON.parse(info);
+
+				var i = 0;
+				var htmlTable = "";
+				var SQL = "";
+				var bandera = 0;
+
+				if (arrayRS3.length == 0) {
+
+					htmlTable = htmlTable + "<tr class='center'>"
+					htmlTable = htmlTable + "	<td colspan='9' class='center'>"
+					htmlTable = htmlTable + "		No hay Reportes en ejecucion."
+					htmlTable = htmlTable + "	</td>"
+					htmlTable = htmlTable + "</tr>"
+				}
+				else {
+					for (i = 0; i < arrayRS3.length; i++) {
+						htmlTable = ""
+						if (arrayRS3[i].IN_PROGRESS != 0) {
+							htmlTable = htmlTable + "<tr class='success-tr'>";
+						}
+						else if (arrayRS3[i].ERRORES != "" && arrayRS3[i].ERRORES != null) {
+							htmlTable = htmlTable + "<tr class='error-tr'>";
+						}
+						else {
+							if (Math.trunc(i / 2) * 2 == i) {
+								htmlTable = htmlTable + "<tr class='tr-F2F2F2'>";
+							}
+							else {
+								htmlTable = htmlTable + "<tr>";
+							}
+						}
+						htmlTable = htmlTable + "	<td align='center'><input type='checkbox' name='reporte[]' value='" + arrayRS3[i].ID_CHRON + "'></td>";
+						htmlTable = htmlTable + "	<td align='center'>" + arrayRS3[i].ID_CRON + "</td>";
+						htmlTable = htmlTable + "	<td>" + arrayRS3[i].HORA_CREACION + "</td>";
+						htmlTable = htmlTable + "	<td aling='left'>" + arrayRS3[i].NAME + "</td>";
+						htmlTable = htmlTable + "	<td aling='left'>" + arrayRS3[i].TIPO_REPORTE + "</td>";
+						htmlTable = htmlTable + "	<td align='center'>" + arrayRS3[i].PROGRAMACION + "</td>";
+						htmlTable = htmlTable + "	<td align='right'>" + arrayRS3[i].PRIORITE + "</td>";
+						htmlTable = htmlTable + "	<td align='right'>" + arrayRS3[i].IN_PROGRESS + "</td>";
+						if (arrayRS3[i].ERORES != "" && arrayRS3[i].ERRORES != null) {
+							//htmlTable = htmlTable + "	<td align='right'><button type='button' class='modal-click' data-idcron='" + arrayRS3[i].ID_CRON_DET + "' data-status='" + arrayRS3[i].STATUS + "'>Ver error</button></td>";
+							htmlTable = htmlTable + "	<td align='right'><button type='button'  Onclick='tmp_ws_gen(" + arrayRS3[i].ID_CRON_DET + ");'>Ver error</button></td>";
+
+						}
+						else {
+							htmlTable = htmlTable + "	<td align='right'></td>";
+						}
+						htmlTable = htmlTable + "<tr>";
+						//console.log(arrayRS3[i].ID_CRON);
+						$("#tbResult").append(htmlTable);
+					}
+				}
+			}
+            
+			function tmp_ws_gen(id_cron) {
+				const xhr = new XMLHttpRequest();
+                var someHandler = "ok";
+              
+                SQL = "select ID_REPORTE,LOG,TO_char(DATE_CREATED,'DD/MON/YYYY HH24:MI:SS')DATE_CREATED from rep_chron_error where id_reporte in( " + id_cron;
+                SQL = SQL + ") and trunc(date_created) = trunc(sysdate) ";
+
+                const url = "http://localhost:62663/Report_Service.svc/GetSql?sql=" + SQL;
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+                        mostrarModal(xhr.responseText);
+                    }
+                }
+				xhr.open("GET", url, true);
+                xhr.send();
+            }
+			function mostrarModal(arrayRS) {
+                var i = 0;
+				var arrayModal;
+				var htmlTable = "";
+                var objResult = JSON.parse(arrayRS);
+                var info = objResult.GetSqlResult;
+                var arrayModal = JSON.parse(info);
+				var modal = document.getElementById("myModal");
+				//limpiar modal
+                $("#tbModal").empty();
+                modal.style.display = "block";
+				//arrayModal
+				if (arrayModal.length > 0) {
+					for (i = 0; i < arrayModal.length; i++) {
+						htmlTable = "";
+						htmlTable = htmlTable + "<tr class='tr-moda tr-moda-" + arrayModal[i].ID_REPORTE + "'>";
+						htmlTable = htmlTable + "	<td align='center'>" + arrayModal[i].ID_REPORTE + "</td>";
+						htmlTable = htmlTable + "	<td align='left'>" + arrayModal[i].LOG + "</td>";
+						htmlTable = htmlTable + "	<td align='center'>" + arrayModal[i].DATE_CREATED + "</td>";
+						htmlTable = htmlTable + "<tr>"
+                        $("#tbModal").append(htmlTable);
+					}
+
+				}
+
+			}
+
+            //$(document).ready(ftn_GetConsultaErrores);
+        </script>
