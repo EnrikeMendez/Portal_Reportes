@@ -1,29 +1,21 @@
-<%@  language="VBScript" %>
-<% option explicit 
-%><!--#include file="include/include.asp"--><%
+<!--#include file="include/include.asp"-->
+<%
 'admin of logis web site :
 'modificacion de reportes
 Response.Expires = 0
 call check_session()
-dim SQL, arrayRS, SQL_02, arrayRS2, i, rst, arrayRS3, nowDay, backDays
-set rst = Server.CreateObject("ADODB.Recordset")
-backDays = 1
-nowDay = Now
-
-Function NVL(str)
-	if IsNull(str) then
-		NVL = "" 
-	else 
-		NVL = str
-	end if
-End Function
-
 %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1" />
-    <% call print_style() %>
+
+    <!--ORP: WS AJAX-->
+    <!--call print_style()-->
+    <link href="css/print_style.css" type="text/css" rel="stylesheet" />
+    <!--ORP: WS AJAX-->
+
+
     <link type="text/css" href="css/logis_style.min.css" rel="stylesheet" />
     <link href="include/logis.css" type="text/css" rel="stylesheet" />
     <script type="text/javascript" src="js/reports.min.js"></script>

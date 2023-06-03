@@ -1,6 +1,8 @@
 <%@  language="VBScript" %>
-<% option explicit 
-%><!--#include file="include/include.asp"--><%
+<% option explicit %>
+<!--#include file="include/include.asp"-->
+
+<%
 'admin of logis web site :
 'modificacion de reportes
 	Response.Expires = 0
@@ -16,22 +18,36 @@ Function NVL(str)
 	end if
 End Function
 
-	if Request("reporte[]") <> "" then	
-		SQL = "update rep_chron set priorite = " & Request("select_prioridad") & " where id_chron in (" & Request("reporte[]") & ")"
-		rst.Open SQL, Connect(), 0, 1, 1
-		Response.Write  "<br>Se cambio a prioridad " & Request("select_prioridad") & " los id_chron " & Request("reporte[]") & " de la tabla rep_cron."
-	end if
+	'if Request("reporte[]") <> "" then	
+	'	SQL = "update rep_chron set priorite = " & Request("select_prioridad") & " where id_chron in (" & Request("reporte[]") & ")"
+	'	rst.Open SQL, Connect(), 0, 1, 1
+	'	Response.Write  "<br>Se cambio a prioridad " & Request("select_prioridad") & " los id_chron " & Request("reporte[]") & " de la tabla rep_cron."
+	'end if
 %>
 <!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1" />
-    <% call print_style() %>
+
+    <!--ORP: WS AJAX-->
+    <!--call print_style()-->
+    <link href="css/print_style.css" type="text/css" rel="stylesheet" />
+    <!--ORP: WS AJAX-->
+
+
     <link href="include/logis.css" type="text/css" rel="stylesheet" />
     <link href="css/logis_style.css" type="text/css" rel="stylesheet" />
     <script language="JavaScript" src="./include/tigra_tables.js"></script>
-	<script type="text/javascript" src="js/reports.min.js"></script>
+    <script type="text/javascript" src="js/reports.min.js"></script>
+    <!--ORP: WS AJAX-->
+    <script src="js/jquery-1.3.2.min.js"></script>
+    <script src="js/main.js"></script>
+    <!--ORP: WS AJAX-->
+
     <script type="text/javascript">
+
+
+
         var MinutosRecargarPagina = 5;
 
         var totLabel = "";
@@ -56,9 +72,8 @@ End Function
                 </div>
                 <li onclick="window.location.href='menu.asp';" class="link_cursor">Inicio
                 </li>
-				<li id="imgXls" alt="Exportar" title="Exportar consulta" onclick="GeneraExcel('CambioPrioridad','select_reporte')" class="link_cursor">
-					Exportar consulta
-				</li>
+                <li id="imgXls" alt="Exportar" title="Exportar consulta" onclick="GeneraExcel('CambioPrioridad','select_reporte')" class="link_cursor">Exportar consulta
+                </li>
             </ul>
             <h2>CAMBIO DE PRIORIDAD
             </h2>
@@ -66,30 +81,15 @@ End Function
     </div>
 
     <%
-
-
-			SQL = "select reporte.id_rep, reporte.name as nombre_reporte, chron.priorite, cliente, rep_det.id_cron, rep_det.name as nombre_detalle, TO_char(date_created,'DD/MON/YYYY HH24:MI') as hora_creacion, rep_det.dest_mail, id_chron " & VbCrLf 
-			SQL = SQL & " from rep_detalle_reporte rep_det " & VbCrLf 
-			SQL = SQL & " join REP_CHRON chron on chron.id_rapport = rep_det.id_cron " & VbCrLf 
-			SQL = SQL & "  join rep_reporte reporte on reporte.id_rep = rep_det.id_rep " & VbCrLf 
-			SQL = SQL & "  where chron.active = 1 " & VbCrLf 
-			SQL = SQL & " and chron.MINUTES is null and chron.HEURES is null and chron.JOURS is null and chron.MOIS is null and chron.JOUR_SEMAINE is null and chron.LAST_EXECUTION is null " & VbCrLf 
-			SQL = SQL & "  order by chron.priorite, id_cron desc " 
-			arrayRS = GetArrayRS(SQL)
-			
-		
-			
+	
 			'< ---CHG-DESA-27042022-01
 			'invoca el seteo dinamico de prioridad
 			call sub_procesos_prioridad_dinamica()
 			' CHG-DESA-27042022-01-- >
 
-
 			if not IsArray(arrayRS) then
 				Response.Write "<script>MinutosRecargarPagina = totLabel;</script>"
 			end if
-
-			
 
     %>
 
@@ -104,7 +104,7 @@ End Function
                 <tr>
                     <td class="width-15p">
                         <label>Prioridad</label>
-                        <select name="select_prioridad" class="form-control rounded-cmb">
+                        <select name="select_prioridad" id="select_prioridad" class="form-control rounded-cmb">
                             <option value="0" selected>0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -118,7 +118,12 @@ End Function
                         </select>
                     </td>
                     <td>
-                        <button type="submit" class="rounded-btn">Guardar</button>
+
+                        <!--ORP: WS AJAX-->
+                        <!--<button type="submit" class="rounded-btn">Guardar</button>-->
+                        <button id="btn_guardar" class="rounded-btn" onclick="ftn_GettModificaCambioPrioridad()">Guardar</button>
+                        <!--ORP: WS AJAX-->
+
                     </td>
                 </tr>
             </table>
@@ -138,30 +143,7 @@ End Function
                     <th>Email</th>
                 </tr>
             </thead>
-            <tbody>
-                <%
-					if not IsArray(arrayRS) then
-						Response.Write "<tr class='center'>"
-						Response.Write "	<td colspan='9' class='center'>"
-						Response.Write "		No hay Reportes en ejecuci&oacute;n."
-						Response.Write "	</td>"
-						Response.Write "</tr>"
-					else
-						for i = 0 to UBound(arrayRS,2)
-							Response.Write "<tr>"
-							Response.Write "	<td align='center'><input type='checkbox' name='reporte[]' value='" & arrayRS(8,i) & "'></td>" & vbCrLf & vbTab
-							Response.Write "	<td align='center'>"& arrayRS(0,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td> <font class='carmin'>" & arrayRS(1,i) & "</font></td>"
-							Response.Write "	<td align='center'>"& arrayRS(2,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td align='center'>"& arrayRS(3,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td align='center'>"& arrayRS(4,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td>"& arrayRS(5,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td>"& arrayRS(6,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "	<td>"& arrayRS(7,i) &"</td>" & vbCrLf & vbTab
-							Response.Write "<tr>"
-						next
-					end if
-                %>
+            <tbody id="print_data">
             </tbody>
         </table>
     </form>
@@ -252,6 +234,137 @@ End Function
         document.querySelector("#table-buscar").onkeyup = function () {
             $TableFilter("#select_reporte", this.value);
         }
+
+
+        //< !--ORP: WS AJAX-- >
+        function ftn_GetConsultaCambioPrioridad() {
+            const xhr = new XMLHttpRequest();
+            //const url = "http://localhost:51687/Report_Service.svc/GetConsultaCambioPrioridad";
+            const url = urlWebService + "GetConsultaCambioPrioridad";
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    ftn_consulta_cambio_prioridad(xhr.responseText);
+                }
+            }
+
+            xhr.open("GET", url, true);
+            xhr.send();
+        }
+
+        function ftn_GettModificaCambioPrioridad() {
+            const xhr = new XMLHttpRequest();
+
+            var id_crons = "";
+            var prioridad = 0;
+
+            prioridad = document.getElementById("select_prioridad").value;
+            id_crons = document.getElementById("reporte[]").value;
+
+            if (id_crons != "") {
+                //const url = "http://localhost:51687/Report_Service.svc/GetModificaCambioPrioridad?id_crons = "+ id_crons +" ";
+                const url = urlWebService + "GetModificaCambioPrioridad?id_crons=" + id_crons + "&prioridad= " + prioridad + "";
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+                        ftn_modifica_cambio_prioridad(xhr.responseText);
+                    }
+                }
+                xhr.open("GET", url, true);
+                xhr.send();
+            }
+            else {
+                alert("Seleccione un reporte primero.");
+            }
+
+            
+        }
+
+
+
+        function ftn_consulta_cambio_prioridad(wsResponseText) {
+
+            var objResult = JSON.parse(wsResponseText);
+            var info = objResult.GetConsultaCambioPrioridadResult;
+            var arrayData = JSON.parse(info);
+
+            var i = 0;
+            var htmlTable = "";
+
+            if (arrayData.length == 0) {
+                htmlTable = htmlTable + "<tr class='center' >";
+                htmlTable = htmlTable + "<td colspan='9' class='center'>";
+                htmlTable = htmlTable + " No hay Reportes en ejecuci&oacute;n.";
+                htmlTable = htmlTable + "</td>";
+                htmlTable = htmlTable + "</tr>";
+
+                $("#print_data").append(htmlTable);
+
+            } else {
+
+                for (i = 0; i < arrayData.length; i++) {
+
+                    htmlTable = "";
+
+                    htmlTable = htmlTable + "<tr>";
+
+                    htmlTable = htmlTable + " <td align='center'><input type='checkbox' name='reporte[]' id='reporte[]' value='" + arrayData[i].ID_CHRON + "'></td> \n\n"
+
+
+                    htmlTable = htmlTable + "<td align='center'>";
+                    htmlTable = htmlTable + arrayData[i].ID_REP;
+                    htmlTable = htmlTable + "</td> \n\n";
+
+                    htmlTable = htmlTable + "<td> <font class='carmin'>";
+                    htmlTable = htmlTable + arrayData[i].NOMBRE_REPORTE;
+                    htmlTable = htmlTable + "</font> </td> \n\n";
+
+                    htmlTable = htmlTable + "<td align='center'>";
+                    htmlTable = htmlTable + arrayData[i].PRIORITE;
+                    htmlTable = htmlTable + "</td> \n\n";
+
+                    htmlTable = htmlTable + "<td align='center'>";
+                    htmlTable = htmlTable + arrayData[i].CLIENTE;
+                    htmlTable = htmlTable + "</td> \n\n";
+
+                    htmlTable = htmlTable + "<td align='center'>";
+                    htmlTable = htmlTable + arrayData[i].ID_CRON;
+                    htmlTable = htmlTable + "</td> \n\n";
+
+                    htmlTable = htmlTable + "<td>";
+                    htmlTable = htmlTable + arrayData[i].NOMBRE_DETALLE;
+                    htmlTable = htmlTable + "</td> \n\n";
+
+                    htmlTable = htmlTable + "<td>";
+                    htmlTable = htmlTable + arrayData[i].HORA_CREACION;
+                    htmlTable = htmlTable + "</td> \n\n";
+
+                    htmlTable = htmlTable + "<td>";
+                    if (arrayData[i].DEST_MAIL != "") {
+                        htmlTable = htmlTable + arrayData[i].DEST_MAIL;
+                    }
+                    htmlTable = htmlTable + "</td> \n\n";
+
+
+                    htmlTable = htmlTable + "</tr> \n\n";
+                }
+
+                $("#print_data").append(htmlTable);
+            }
+
+        }
+        $(document).ready(ftn_GetConsultaCambioPrioridad);
+
+        function ftn_modifica_cambio_prioridad(wsResponseText) {
+
+            var objResult = JSON.parse(wsResponseText);
+            var info = objResult.GetConsultaCambioPrioridadResult;
+            alert(info);
+        }
+
+            //< !--ORP: WS AJAX-- >
+
+
 
     </script>
 </body>

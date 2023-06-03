@@ -1,0 +1,54 @@
+﻿
+<style type="text/css" >
+td {
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+th {
+    background-color: goldenrod;
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.title {
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.light {
+    font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-size: 9px;
+}
+
+a:visited {
+    color: Blue;
+}
+
+.buttonsOrange {
+    background-color: goldenrod;
+    color: #000000;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    height: 19px;
+    font-color: #000000
+}
+
+.error {
+    font-size: 12pt;
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: #ff0000;
+}
+
+</style >
+
