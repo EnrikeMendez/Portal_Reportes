@@ -115,7 +115,8 @@ Select Case Request("Etape")
 				Response.write("<script>function lockFields() { }</script>") 
 			end if
 			'CHG-DESA-30062021-01 ->
-		SQL =   " select nombre, mail, client_num,  " & _
+		'reitulizar ftn_lista_contactos
+			SQL =   " select nombre, mail, client_num,  " & _
 				" decode (tercero, 1, 'checked', ''), decode (status, 1, 'checked', '') " & _
 				" from rep_mail " & _
 				" where id_mail= '"&SQLEscape(Request.QueryString("mail")) & "' " 

@@ -17,7 +17,7 @@ end function
 <%
 function GetArrayRS (strSQL)
 'return an array from a query
-	dim strCon, obj_conn 
+	dim strCon, obj_conn, rst 
 	set obj_conn=Server.CreateObject("ADODB.connection")
 	Dim CONN_STRING, CONN_USER, CONN_PASS	
 	CONN_STRING = Get_Conn_string("server")
@@ -26,8 +26,6 @@ function GetArrayRS (strSQL)
 	obj_conn.ConnectionTimeout = 1000	'timeout for connection
 	obj_conn.CommandTimeout = 1000		' timeout for SQL commands
 	obj_conn.Open CONN_STRING, CONN_USER, CONN_PASS	
-	
-	Dim rst
 	set rst = Server.CreateObject("ADODB.Recordset")
 	rst.Open strSQL, obj_conn, 0, 1, 1 'cursortype: forwardonly
 	

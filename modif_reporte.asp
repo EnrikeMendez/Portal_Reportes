@@ -43,106 +43,268 @@ Select Case Request.Form("Etape")
 <!DOCTYPE html>
 		<html>
 		<head>
-			<!-- <- CHG-DESA-30062021-01  -->
-			<meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1" />
-			<% call print_style() %>
 			<!-- CHG-DESA-30062021-01 ->  -->
 			<link href="include/logis.css" type="text/css" rel="stylesheet" />
 			<link href="css/logis_style.min.css" type="text/css" rel="stylesheet" />
+			<script src="js/jquery-1.3.2.min.js"></script>
 			<script language="JavaScript" src="./include/tigra_tables.js"></script>
 			<script type="text/javascript" src="js/reports.min.js"></script>
+			<script language="JavaScript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
 			<script type="text/javascript">
-				
-				function FilterTableBy2Params() {
-					var input = document.getElementById("table-buscar");
-					var combo = document.getElementById("select_activos");
-					var filterTxt = input.value.toUpperCase();
-					var filterCmb = combo.value.toUpperCase();
-					var table = document.getElementById("select_reporte");
-					var tr = table.getElementsByTagName("tr");
-					var filterType = 0;
-					var newClass = "";
+                var Type;
+                var Url;
+                var Data;
+                var ContentType;
+                var DataType;
+                var ProcessData;
+                $(document).ready(
+					function () {
+						tmp_ws();
+                    }
+                );
+
+                function tmp_ws() {
+					const xhr = new XMLHttpRequest();
+                    const url = "http://localhost:62663/Report_Service.svc/GetConsultaReportes?usuario=HECTORRR";
+                    var someHandler = "ok";
+
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == XMLHttpRequest.DONE) {
+                            mostrarResultado(xhr.responseText);
+                        }
+                    }
+
+                    xhr.open("GET", url, true);
+                    xhr.send();
+                }
+                function mostrarResultado(wsResponseText) {
+                    var objResult = JSON.parse(wsResponseText);
+                    var info = objResult.GetConsultaReportesResult;
+                    var arrayRS3 = JSON.parse(info);
+
+                    var i = 0;
+                    var htmlTable = "";
+                    var SQL = "";
+                    var bandera = 0;
+
+                    if (arrayRS3.length == 0) {
+                        htmlTable = htmlTable + "<tr class='center'>";
+                        htmlTable = htmlTable + "	<td colspan='9' class='center'>";
+                        htmlTable = htmlTable + "		No hay reportes registrados.";
+                        htmlTable = htmlTable + "	</td>";
+                        htmlTable = htmlTable + "</tr>";
+                    } else {
+						for (i = 0; i < arrayRS3.length; i++) {
+							htmlTable = "";
+							htmlTable = htmlTable + "<tr class='f'>";
+                            // No.
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].ID_CRON + "</td>";
+                            // Nombre
+                            if (arrayRS3[i].NVL_ACTIVE == "0") {
+                                htmlTable = htmlTable + "<td><font color='red'>" + arrayRS3[i].NOMBRE + "</font></td>";
+                            } else {
+                                htmlTable = htmlTable + "<td>" + arrayRS3[i].NOMBRE + "</td>";
+							}
+                            //' Area Negocio
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].AREA_NEGOCIO + "</td>";
+                            //' Prioridad
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].PRIORIDAD + "</td>";
+                            //Tipo Reporte
+							htmlTable = htmlTable + "<td align'left'>" + arrayRS3[i].ID_REP + " - " + arrayRS3[i].REP_NAME + "</td>";
+                            //Lista Correo -> Normal
+                            htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE + "'); name='nVer'>Ver</a></td>";
+                            //Lista Correo -> modificar
+                            htmlTable = htmlTable + "<td class='delC' style='font-size: 9.5px;'><a title='Modificar la lista de correos' href=javascript:modif_list(" + arrayRS3[i].MAIL_OK + ", " + arrayRS3[i].CLIENTE + ");>Mod._norm.</a></td>";
+                            //error
+                            htmlTable = htmlTable + "<td class='delC' style='font-size: 9.5px;'><a title='Modificar la lista de correos en caso de error' href=javascript:modif_list(" + arrayRS3[i].MAIL_ERROR + ", " + arrayRS3[i].CLIENTE + ");>Mod._err</a></td>";
+                            //Cliente
+                            htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].CLIENTE + " - " + arrayRS3[i].INIT_CAP + "</td>";
+                            //Frecuencia
+                            htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].FRECUENCIA + " - " + arrayRS3[i].DESCRIPCION + "</td>";
+                            htmlTable = htmlTable + "<td align='center' class='delC'><a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'mod');>Modificar</a>";
+                            //Accion
+                            if (arrayRS3[i].NVL_ACTIVE == "1") {
+                                htmlTable = htmlTable + "<a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'desactivar');>Desactivar</a></td>";
+                            } else {
+                                htmlTable = htmlTable + "<a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'reactivar');>Reactivar</a></td>";
+							}
+
+                            //Dias en el servidor
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].DIAS_SERVIDOR + "</td>";
+                            //Dias del mes
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].DIA_MES + "</td>";
+                            //Dias de la semana
+                            htmlTable = htmlTable + "<td>";
+                            if (1, arrayRS3[i].DIA_SEMANA > 0) {
+                                htmlTable = htmlTable + "'" + arrayRS3[i].DIA_SEMANA;
+                            } else {
+                                htmlTable = htmlTable + arrayRS3[i].DIA_SEMANA;
+                            }
+                            htmlTable = htmlTable + "</td>";
+                            //Hora(s)
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].HORA + "</td>";
+                            //Minuto(s)
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].MINUTO + "</td>";
+                            //Usuario creacion
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].CREATED_BY + "</td>";
+                            //Fecha creacion
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].DATE_CREATED + "</td>";
+                            //Usuario modificacion
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].MODIFIED_BY + "</td>";
+                            //Fecha modificacion
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].DATE_MODIFIED + "</td>";
+                            //Param_1
+                            if (arrayRS3[i].PARAM_1 == undefined) {
+                                htmlTable = htmlTable + "<td></td>";
+                            }
+                            else {
+                                if (arrayRS3[i].PARAM_1.replace(" ", "").trim = "") {
+                                    htmlTable = htmlTable + "<td></td>";
+                                } else {
+                                    htmlTable = htmlTable + "<td>'" + arrayRS3[i].PARAM_1 + "</td>";
+                                }
+                            }
+                            //Param_2
+                            if (arrayRS3[i].PARAM_1 == undefined) {
+                                htmlTable = htmlTable + "<td></td>";
+                            }
+                            else {
+                                if (arrayRS3[i].PARAM_2.replace(" ", "").trim = "") {
+                                    htmlTable = htmlTable + "<td></td>";
+                                } else {
+                                    htmlTable = htmlTable + "<td>'" + arrayRS3[i].PARAM_2 + "</td>";
+                                }
+                            }
+                            //Param_3
+                            if (arrayRS3[i].PARAM_1 == undefined) {
+                                htmlTable = htmlTable + "<td></td>";
+                            }
+                            else {
+                                if (arrayRS3[i].PARAM_3.replace(" ", "").trim = "") {
+                                    htmlTable = htmlTable + "<td></td>";
+                                } else {
+                                    htmlTable = htmlTable + "<td>'" + arrayRS3[i].PARAM_3 + "</td>";
+                                }
+                            }
+                            //Param_4
+                            if (arrayRS3[i].PARAM_1 == undefined) {
+                                htmlTable = htmlTable + "<td></td>";
+                            }
+                            else {
+                                if (arrayRS3[i].PARAM_4.replace(" ", "").trim = "") {
+                                    htmlTable = htmlTable + "<td></td>";
+                                } else {
+                                    htmlTable = htmlTable + "<td>'" + arrayRS3[i].PARAM_4 + "</td>";
+                                }
+                            }
+                            //Command
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].COMMAND.trim() + "</td>"
+
+							htmlTable = htmlTable + "<tr>"
+                            $("#tbResult").append(htmlTable);
+						}
+                    }
+                }
+            </script>
+
+			<!-- <- CHG-DESA-30062021-01  -->
+			<meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1" />
+			<% call print_style() %>
+			
+			<script type="text/javascript">
+
+                function FilterTableBy2Params() {
+                    var input = document.getElementById("table-buscar");
+                    var combo = document.getElementById("select_activos");
+                    var filterTxt = input.value.toUpperCase();
+                    var filterCmb = combo.value.toUpperCase();
+                    var table = document.getElementById("select_reporte");
+                    var tr = table.getElementsByTagName("tr");
+                    var filterType = 0;
+                    var newClass = "";
                     var bgColor = 0;
 
-					try {
-						showLoading();
+                    try {
+                        showLoading();
 
-						tr = table.getElementsByClassName("f");
-						if (filterTxt != "" && filterCmb != "") {
-							filterType = 1;
-						}
-						else {
-							if (filterTxt != "") {
-								filterType = 2;
-							}
-							if (filterCmb != "") {
-								filterType = 3;
-							}
-						}
+                        tr = table.getElementsByClassName("f");
+                        if (filterTxt != "" && filterCmb != "") {
+                            filterType = 1;
+                        }
+                        else {
+                            if (filterTxt != "") {
+                                filterType = 2;
+                            }
+                            if (filterCmb != "") {
+                                filterType = 3;
+                            }
+                        }
 
-						for (var i = 0; i < tr.length; i++) {
-							var rowContent = tr[i].innerHTML.toUpperCase();
-                            if (bgColor % 2 == 0) { newClass = "tr-odd";}
+                        for (var i = 0; i < tr.length; i++) {
+                            var rowContent = tr[i].innerHTML.toUpperCase();
+                            if (bgColor % 2 == 0) { newClass = "tr-odd"; }
                             else { newClass = "tr-even"; }
 
-							switch (filterType) {
-								case 1:
-									if (rowContent.indexOf(filterTxt) != -1 && rowContent.indexOf(filterCmb) != -1) {
-										tr[i].style.display = "";
+                            switch (filterType) {
+                                case 1:
+                                    if (rowContent.indexOf(filterTxt) != -1 && rowContent.indexOf(filterCmb) != -1) {
+                                        tr[i].style.display = "";
                                         tr[i].setAttribute('class', "f " + newClass);
                                         bgColor++;
-									}
-									else {
-										tr[i].style.display = "none";
-										tr[i].setAttribute('class', "f delC");
-									}
-									break;
-								case 2:
-									if (rowContent.indexOf(filterTxt) == -1) {
-										tr[i].style.display = "none";
-										tr[i].setAttribute('class', "f delC");
-									}
-									else {
-										tr[i].style.display = "";
+                                    }
+                                    else {
+                                        tr[i].style.display = "none";
+                                        tr[i].setAttribute('class', "f delC");
+                                    }
+                                    break;
+                                case 2:
+                                    if (rowContent.indexOf(filterTxt) == -1) {
+                                        tr[i].style.display = "none";
+                                        tr[i].setAttribute('class', "f delC");
+                                    }
+                                    else {
+                                        tr[i].style.display = "";
                                         tr[i].setAttribute('class', "f " + newClass);
                                         bgColor++;
-									}
-									break;
-								case 3:
-									if (rowContent.indexOf(filterCmb) == -1) {
-										tr[i].style.display = "none";
-										tr[i].setAttribute('class', "f delC");
-									}
-									else {
-										tr[i].style.display = "";
+                                    }
+                                    break;
+                                case 3:
+                                    if (rowContent.indexOf(filterCmb) == -1) {
+                                        tr[i].style.display = "none";
+                                        tr[i].setAttribute('class', "f delC");
+                                    }
+                                    else {
+                                        tr[i].style.display = "";
                                         tr[i].setAttribute('class', "f " + newClass);
-										bgColor++;
-									}
-									break;
-								default:
-									tr[i].style.display = "";
+                                        bgColor++;
+                                    }
+                                    break;
+                                default:
+                                    tr[i].style.display = "";
                                     tr[i].setAttribute('class', "f " + newClass);
                                     bgColor++;
-									break;
-							}
-						}
-					}
-					catch { }
-					finally {
-						hideLoading();
-					}
-				}
-				function showActive() {
-					document.getElementById("select_activos").value = "Desactivar";
-					FilterTableBy2Params();
-					hideLoading();
-				}
+                                    break;
+                            }
+                        }
+                    }
+                    catch { }
+                    finally {
+                        hideLoading();
+                    }
+                }
+                function showActive() {
+                    document.getElementById("select_activos").value = "Desactivar";
+                    FilterTableBy2Params();
+                    hideLoading();
+                }
 
-				function showLoading() {
+                function showLoading() {
                     document.getElementById("dvloading").style.display = "";
                     document.getElementById("dvloading").style.visibility = "visible";
-				}
-				function hideLoading() {
+                }
+                function hideLoading() {
                     document.getElementById("dvloading").style.display = "none";
                     document.getElementById("dvloading").style.visibility = "collapse";
                 }
@@ -150,75 +312,76 @@ Select Case Request.Form("Etape")
 			<!-- CHG-DESA-30062021-01 ->  -->
 			<title>Administracion de reportes</title>
 		</head>
-		<body onload="showActive();">
-			<!-- <-	CHG-DESA-30062021-01   --
+		<!-- <body onload="showActive()">
+			<-	CHG-DESA-30062021-01   --
 			<div id="dvloading" style="display:block!important;visibility:visible!important;">
 				<center>Procesando </center>
 				<center><img alt=". . ." id="imgPuntos" src="images/puntosSuspensivos.gif" /></center>
 			</div>
 			<!-- CHG-DESA-30062021-01 ->  -->
-		<%
+		'<%
 		
 		
-		SQL = "select repdet.ID_CRON, trim(nvl(repdet.NAME,'')), rep.id_rep, trim(nvl(rep.name,'')), repdet.CLIENTE, InitCap(cli.clinom) " & VbCrLf 
-		SQL = SQL & " , repdet.FRECUENCIA, tipo.DESCRIPCION, repdet.mail_ok, nvl(cron.active, 0), repdet.mail_error" & VbCrLf 
+		'SQL = "select repdet.ID_CRON, trim(nvl(repdet.NAME,'')), rep.id_rep, trim(nvl(rep.name,'')), repdet.CLIENTE, InitCap(cli.clinom) " & VbCrLf 
+		'SQL = SQL & " , repdet.FRECUENCIA, tipo.DESCRIPCION, repdet.mail_ok, nvl(cron.active, 0), repdet.mail_error" & VbCrLf 
 ' <- CHG-DESA-30062021-01
-			SQL = SQL & " , cli.clirfc" & VbCrLf 
-			SQL = SQL & " , case when  rep.id_rep in (80,98,106,108,110,114,117,118,126,130,142,159,160, 169,171,174,179,175,176,183,186,199,201,221,228,236,240,242,244,248,249,260,263,287,288,290) then 'DISTRIBUCION' else 'COEX' end Area_Negocio" & VbCrLf 
-			SQL = SQL & " , cron.priorite as Prioridad" & VbCrLf 
-			SQL = SQL & " , tipo.DESCRIPCION as frecuencia_desc, repdet.days_deleted as dias_servidor" & VbCrLf 
-			SQL = SQL & " , cron.jours AS DIA_MES, cron.jour_semaine AS DIA_SEMANA" & VbCrLf 
-			SQL = SQL & " , cron.heures AS HORA" & VbCrLf 
-			SQL = SQL & " , cron.minutes AS MINUTO" & VbCrLf 
-			SQL = SQL & " ,repdet.CLIENTE || ' ' || repdet.NAME AS Num_Nom" & VbCrLf 
-			SQL = SQL & " , repdet.param_1, repdet.param_2,repdet.param_3,repdet.param_4" & VbCrLf 
-			SQL = SQL & " , repdet.created_by, repdet.date_created, repdet.modified_by, repdet.date_modified" & VbCrLf 
-			SQL = SQL & " , rep.COMMAND AS COMMAND" & VbCrLf 
+			'SQL = SQL & " , cli.clirfc" & VbCrLf 
+			'SQL = SQL & " , case when  rep.id_rep in (80,98,106,108,110,114,117,118,126,130,142,159,160, 169,171,174,179,175,176,183,186,199,201,221,228,236,240,242,244,248,249,260,263,287,288,290) then 'DISTRIBUCION' else 'COEX' end Area_Negocio" & VbCrLf 
+			'SQL = SQL & " , cron.priorite as Prioridad" & VbCrLf 
+			'SQL = SQL & " , tipo.DESCRIPCION as frecuencia_desc, repdet.days_deleted as dias_servidor" & VbCrLf 
+			'SQL = SQL & " , cron.jours AS DIA_MES, cron.jour_semaine AS DIA_SEMANA" & VbCrLf 
+			'SQL = SQL & " , cron.heures AS HORA" & VbCrLf 
+			'SQL = SQL & " , cron.minutes AS MINUTO" & VbCrLf 
+			'SQL = SQL & " ,repdet.CLIENTE || ' ' || repdet.NAME AS Num_Nom" & VbCrLf 
+			'SQL = SQL & " , repdet.param_1, repdet.param_2,repdet.param_3,repdet.param_4" & VbCrLf 
+			'SQL = SQL & " , repdet.created_by, repdet.date_created, repdet.modified_by, repdet.date_modified" & VbCrLf 
+			'SQL = SQL & " , rep.COMMAND AS COMMAND" & VbCrLf 
 'CHG-DESA-30062021-01->
-		SQL = SQL & " from rep_detalle_reporte repdet " & VbCrLf 
-		SQL = SQL & " , rep_reporte rep " & VbCrLf 
-		SQL = SQL & " , rep_chron cron " & VbCrLf 
-		SQL = SQL & " , REP_TIPO_FRECUENCIA tipo " & VbCrLf 
-		SQL = SQL & " , eclient cli " & VbCrLf 
-		SQL = SQL & " where rep.ID_REP = repdet.id_rep " & VbCrLf 
-		SQL = SQL & " and cron.ID_RAPPORT(+) = repdet.id_cron  " & VbCrLf 
-		SQL = SQL & " and tipo.ID_TIPO_FREC = repdet.FRECUENCIA " & VbCrLf 
-		SQL = SQL & " and cli.cliclef = repdet.cliente " & VbCrLf 
+		'SQL = SQL & " from rep_detalle_reporte repdet " & VbCrLf 
+		'SQL = SQL & " , rep_reporte rep " & VbCrLf 
+		'SQL = SQL & " , rep_chron cron " & VbCrLf 
+		'SQL = SQL & " , REP_TIPO_FRECUENCIA tipo " & VbCrLf 
+		'SQL = SQL & " , eclient cli " & VbCrLf 
+		'SQL = SQL & " where rep.ID_REP = repdet.id_rep " & VbCrLf 
+		'SQL = SQL & " and cron.ID_RAPPORT(+) = repdet.id_cron  " & VbCrLf 
+		'SQL = SQL & " and tipo.ID_TIPO_FREC = repdet.FRECUENCIA " & VbCrLf 
+		'SQL = SQL & " and cli.cliclef = repdet.cliente " & VbCrLf 
 		'SQL = SQL & " and repdet.test = 0 " & VbCrLf 
 		'SQL = SQL & " and cron.active = 1 " & VbCrLf 
 
 ' <- CHG-DESA-30062021-01
-		for i=0 to UBound(arr1)
-			if Session("array_user")(0,0) = arr1(i) then
-				SQL = SQL + " and rep.id_rep in (14,173,24) "
-				exit for
-			end if
-		next
+		'for i=0 to UBound(arr1)
+		'	if Session("array_user")(0,0) = arr1(i) then
+		'		SQL = SQL + " and rep.id_rep in (14,173,24) "
+		'		exit for
+		'	end if
+		'next
 
-		for i=0 to UBound(arr2)
-			if Session("array_user")(0,0) = arr2(i) then
-				SQL = SQL + " and rep.id_rep = 174 "
-				exit for
-			end if
-		next
+		'for i=0 to UBound(arr2)
+		'	if Session("array_user")(0,0) = arr2(i) then
+		'		SQL = SQL + " and rep.id_rep = 174 "
+		'		exit for
+		'	end if
+		'next
 ' CHG-DESA-30062021-01 ->
 
 
-		SQL = SQL & " order by 2 "
+		'SQL = SQL & " order by 2 "
 
-		arrayRS = GetArrayRS(SQL)
+		'arrayRS = GetArrayRS(SQL)
+
 
 '			response.write Replace(SQL,VbCrLf,"<br>")
 '			response.End
 		
-		if not IsArray(arrayRS) then 
-			Response.Write "No hay reportes registrados."
-			Response.End 
-		end if
+		'if not IsArray(arrayRS) then 
+		'	Response.Write "No hay reportes registrados."
+		'	Response.End 
+		'end if
 		
 		'affichage du popup pour la fonction filtre_col
-		call print_popup()
-		%>
+		'call print_popup()
+		'%>
 		<!-- <- CHG-DESA-30062021-01  -->
 		<div class="contenedorMenu">
 			<div class="dvMenu">
@@ -299,155 +462,163 @@ Select Case Request.Form("Etape")
 					</tr>
 			<!-- CHG-DESA-30062021-01 ->  -->
 		</thead>
+		<tbody id="tbResult">
+
+		</tbody>
+		
 		<%
-		for i = 0 to UBound(arrayRS,2)
-			Response.Write "<tr class='f'> "
+
+		
+		
+		'for i = 0 to UBound(arrayRS,2)
+		'	Response.Write "<tr class='f'> "
 			
 			' No.
-			Response.Write "<td>"& arrayRS(0,i) &"</td>" & vbCrLf & vbTab 
+		'	Response.Write "<td>"& arrayRS(0,i) &"</td>" & vbCrLf & vbTab 
 			
 			' Nombre
-			Response.Write "<td>"
-			if arrayRS(9,i) = "0" then
-				Response.Write "<font color='red'>" & arrayRS(1,i) & "</font></td>"
-			else 
-				Response.Write arrayRS(1,i) & "</td>"
-			end if 
+		'	Response.Write "<td>"
+		'	if arrayRS(9,i) = "0" then
+		'		Response.Write "<font color='red'>" & arrayRS(1,i) & "</font></td>"
+		'	else 
+		'		Response.Write arrayRS(1,i) & "</td>"
+		'	end if 
 			
 			' <- CHG-DESA-30062021-01
 			' Area Negocio
-			Response.Write "<td>" & arrayRS(12,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(12,i) & "</td>"
 			
 			' Prioridad
-			Response.Write "<td>" & arrayRS(13,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(13,i) & "</td>"
 			
 			' Tipo Reporte
-			Response.Write vbCrLf & vbTab
+		'	Response.Write vbCrLf & vbTab
 
 			' Lista Correo -> Ver
-			Response.Write "<td align=""left"">" & JSescape(arrayRS(2,i)) & " - " & JSescape(arrayRS(3,i)) & "</td>" & vbCrLf & vbTab
+		'	Response.Write "<td align=""left"">" & JSescape(arrayRS(2,i)) & " - " & JSescape(arrayRS(3,i)) & "</td>" & vbCrLf & vbTab
 			' Lista Correo -> Normal
-			Response.Write "<td class=""delC"" align=""center""><a href=""javascript:ver_lista('"& arrayRS(8,i) &"','" & arrayRS(0,i) & "','" & arrayRS(4,i) & "');""; name='nVer'>Ver</a></td>" & vbCrLf & vbTab
+		'	Response.Write "<td class=""delC"" align=""center""><a href=""javascript:ver_lista('"& arrayRS(8,i) &"','" & arrayRS(0,i) & "','" & arrayRS(4,i) & "');""; name='nVer'>Ver</a></td>" & vbCrLf & vbTab
 			' Lista Correo -> Error
-			Response.Write "<td class=""delC"" style=""font-size: 9.5px;""><a title=""Modificar la lista de correos"" href=""javascript:modif_list("& arrayRS(8,i) &", "& arrayRS(4,i) &");"">Mod._norm.</a></td>" & vbCrLf & vbTab
+		'	Response.Write "<td class=""delC"" style=""font-size: 9.5px;""><a title=""Modificar la lista de correos"" href=""javascript:modif_list("& arrayRS(8,i) &", "& arrayRS(4,i) &");"">Mod._norm.</a></td>" & vbCrLf & vbTab
 			
 			' Cliente
-			Response.Write "<td class=""delC"" style=""font-size: 9.5px;""><a title=""Modificar la lista de correos en caso de error"" href=""javascript:modif_list("& arrayRS(10,i) &", "& arrayRS(4,i) &");"">Mod._err</a></td>" & vbCrLf & vbTab
+		'	Response.Write "<td class=""delC"" style=""font-size: 9.5px;""><a title=""Modificar la lista de correos en caso de error"" href=""javascript:modif_list("& arrayRS(10,i) &", "& arrayRS(4,i) &");"">Mod._err</a></td>" & vbCrLf & vbTab
 			
 			' Frecuencia
-			Response.Write "<td align=""left"">" & JSescape(arrayRS(4,i)) & " - " & arrayRS(5,i) & "</td>" & vbCrLf & vbTab
+		'	Response.Write "<td align=""left"">" & JSescape(arrayRS(4,i)) & " - " & arrayRS(5,i) & "</td>" & vbCrLf & vbTab
 			
 			' Accion
-			Response.Write "<td align=""left"">" & JSescape(arrayRS(6,i)) & " - " & arrayRS(7,i) & "</td>" & vbCrLf & vbTab
-			Response.Write "<td align=""center"" class=""delC""><a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'mod');"">Modificar</a>_|_"
+		'	Response.Write "<td align=""left"">" & JSescape(arrayRS(6,i)) & " - " & arrayRS(7,i) & "</td>" & vbCrLf & vbTab
+		'	Response.Write "<td align=""center"" class=""delC""><a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'mod');"">Modificar</a>_|_"
 			'CHG-DESA-30062021-01 ->
 
-			if arrayRS(9,i) = "1" then
-				Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'desactivar');"">Desactivar</a></td>" & vbCrLf
-			else
-				Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'reactivar');"">Reactivar</a></td>" & vbCrLf
-			end if
+		'	if arrayRS(9,i) = "1" then
+		'		Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'desactivar');"">Desactivar</a></td>" & vbCrLf
+		'	else
+		'		Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'reactivar');"">Reactivar</a></td>" & vbCrLf
+		'	end if
 
 			'<- CHG-DESA-30062021-01
 			' Dias en el servidor
-			Response.Write "<td>" & arrayRS(15,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(15,i) & "</td>"
 			
 			' Dias del mes
-			Response.Write "<td>" & arrayRS(16,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(16,i) & "</td>"
 			
 			' Dias de la semana
-			Response.Write "<td>" 
-			if InStr(1,arrayRS(17,i),"-") > 0 then
-				Response.Write "'" & arrayRS(17,i)
-			else
-				Response.Write arrayRS(17,i)
-			end if
-			Response.Write "</td>"
+		'	Response.Write "<td>" 
+		'	if InStr(1,arrayRS(17,i),"-") > 0 then
+		'		Response.Write "'" & arrayRS(17,i)
+		'	else
+		'		Response.Write arrayRS(17,i)
+		'	end if
+		'	Response.Write "</td>"
 
 			' Hora(s)
-			Response.Write "<td>" & arrayRS(18,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(18,i) & "</td>"
 			
 			' Minuto(s)
-			Response.Write "<td>" & arrayRS(19,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(19,i) & "</td>"
 			
 			' Usuario creacion
-			Response.Write "<td>" & arrayRS(25,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(25,i) & "</td>"
 			
 			' Fecha creacion
-			Response.Write "<td>" & arrayRS(26,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(26,i) & "</td>"
 			
 			' Usuario modificacion
-			Response.Write "<td>" & arrayRS(27,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(27,i) & "</td>"
 			
 			' Fecha modificacion
-			Response.Write "<td>" & arrayRS(28,i) & "</td>"
+		'	Response.Write "<td>" & arrayRS(28,i) & "</td>"
 			
 			' Param_1
-			if replace(trim(nvl(arrayRS(21,i)))," ","") = "" then
-				Response.Write "<td></td>"
-			else
-				Response.Write "<td>'" & arrayRS(21,i) & "</td>"
-			end if
+		'	if replace(trim(nvl(arrayRS(21,i)))," ","") = "" then
+		'		Response.Write "<td></td>"
+		'	else
+		'		Response.Write "<td>'" & arrayRS(21,i) & "</td>"
+		'	end if
 			
 			' Param_2
-			if replace(trim(nvl(arrayRS(22,i)))," ","") = "" then
-				Response.Write "<td></td>"
-			else
-				Response.Write "<td>'" & arrayRS(22,i) & "</td>"
-			end if
+		'	if replace(trim(nvl(arrayRS(22,i)))," ","") = "" then
+		'		Response.Write "<td></td>"
+		'	else
+		'		Response.Write "<td>'" & arrayRS(22,i) & "</td>"
+		'	end if
 			
 			' Param_3
-			if replace(trim(nvl(arrayRS(23,i)))," ","") = "" then
-				Response.Write "<td></td>"
-			else
-				Response.Write "<td>'" & arrayRS(23,i) & "</td>"
-			end if
+		'	if replace(trim(nvl(arrayRS(23,i)))," ","") = "" then
+		'		Response.Write "<td></td>"
+		'	else
+		'		Response.Write "<td>'" & arrayRS(23,i) & "</td>"
+		'	end if
 
 			' Param_4
-			if replace(trim(nvl(arrayRS(24,i)))," ","") = "" then
-				Response.Write "<td></td>"
-			else
-				Response.Write "<td>'" & arrayRS(24,i) & "</td>"
-			end if
+		'	if replace(trim(nvl(arrayRS(24,i)))," ","") = "" then
+		'		Response.Write "<td></td>"
+		'	else
+		'		Response.Write "<td>'" & arrayRS(24,i) & "</td>"
+		'	end if
 
 			' Command
-			Response.Write "<td>" & trim(nvl(arrayRS(29,i))) & "</td>"
+		'	Response.Write "<td>" & trim(nvl(arrayRS(29,i))) & "</td>"
 			'CHG-DESA-30062021-01 ->
 
-			Response.Write "</tr>" & vbCrLf 
-		next
+		'	Response.Write "</tr>" & vbCrLf 
+		'next
+		
 		%>
 		<script language="javascript">
             //<!--
-			function modif_reporte(id_rep, accion) {
-				document.modif_rep.id_reporte.value = id_rep;
-				document.modif_rep.accion.value = accion;
-				if ((accion == 'desactivar') || (accion == 'reactivar')) {
-					if (confirm('¿ Esta seguro de ' + accion + ' el reporte no. ' + id_rep + ' ?')) {
-						document.modif_rep.etape.value = 3;
-						document.modif_rep.submit();
-					};
-				}
-				else {
-					document.modif_rep.etape.value = 1;
-					document.modif_rep.submit();
-				}
-			}
+            function modif_reporte(id_rep, accion) {
+                document.modif_rep.id_reporte.value = id_rep;
+                document.modif_rep.accion.value = accion;
+                if ((accion == 'desactivar') || (accion == 'reactivar')) {
+                    if (confirm('¿ Esta seguro de ' + accion + ' el reporte no. ' + id_rep + ' ?')) {
+                        document.modif_rep.etape.value = 3;
+                        document.modif_rep.submit();
+                    };
+                }
+                else {
+                    document.modif_rep.etape.value = 1;
+                    document.modif_rep.submit();
+                }
+            }
 
-			function modif_list(id_list, id_client) {
-				document.modif_list.mail_list.value = id_list;
-				document.modif_list.id_client.value = id_client;
-				document.modif_list.submit();
-			}
+            function modif_list(id_list, id_client) {
+                document.modif_list.mail_list.value = id_list;
+                document.modif_list.id_client.value = id_client;
+                document.modif_list.submit();
+            }
 
-			//<- CHG-DESA-30062021-01
-			function ver_lista(lista, Num, Cli) {
-				localStorage.setItem('Cli', Cli);
-				localStorage.setItem('sURI_list', "ver_lista.asp?liste=" + lista + "&Num=" + Num);
-				localStorage.setItem('Id_Cron', Num);
+            //<- CHG-DESA-30062021-01
+            function ver_lista(lista, Num, Cli) {
+                localStorage.setItem('Cli', Cli);
+                localStorage.setItem('sURI_list', "ver_lista.asp?liste=" + lista + "&Num=" + Num);
+                localStorage.setItem('Id_Cron', Num);
                 localStorage.setItem('pop', 1);
                 window.showModalDialog("ver_lista.asp?liste=" + lista + "&Num=" + Num, "Lista_contactos", "toolbar=no, location=no, directories=no, status=yes, scrollbars=yes, resizable=no, copyhistory=no, width=765, height=444, left=333, top=111, center=yes");
-			}
+            }
             //CHG-DESA-30062021-01 ->
 		//-->
         </script>
@@ -461,7 +632,7 @@ Select Case Request.Form("Etape")
 			<input type="hidden" name="id_client" value="" />
 		</form>
 		<script language="JavaScript">
-			tigra_tables('select_reporte', 4, 0, '#ffffff', '#ffffcc', '#ffcc66', '#cccccc');
+            tigra_tables('select_reporte', 4, 0, '#ffffff', '#ffffcc', '#ffcc66', '#cccccc');
         </script>
 		</table>
 		<script>
@@ -564,13 +735,14 @@ case "1"
 				<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
 				<script type="text/javascript" src="js/jquery.validate.min.js"></script>
 				<script type="text/javascript">
-					$().ready(function () {
-						$("#modif_rep").validate();
-						jQuery.extend(jQuery.validator.messages, {
-							required: "Campo obligatorio."
+					$(document).ready(function () {
+                        $("#modif_rep").validate();
+                        jQuery.extend(jQuery.validator.messages, {
+                            required: "Campo obligatorio."
 						});
-					});
-				</script>
+                        tmp_ws();
+                    });
+                </script>
 				<style>
 					td{font-size:12px !important;}
 					.width-344{width:344px;}
@@ -838,23 +1010,23 @@ case "1"
 											<td class="tdField">
 												<input type="text" name="TEMP_MENSAJE_FECHA" size="10" class="light height-20" value="<%=arrayRS(20,0)%>" align="middle" />
 												<script language="JavaScript" type="text/javascript">
-													//<!--
-													if (is_ie5up || is_nav6up || is_gecko) {
-														Calendar = new dynCalendar('Calendar', 'CalendarCallback');
-														Calendar.setOffset(240, 395);
-													}
+                                                    //<!--
+                                                    if (is_ie5up || is_nav6up || is_gecko) {
+                                                        Calendar = new dynCalendar('Calendar', 'CalendarCallback');
+                                                        Calendar.setOffset(240, 395);
+                                                    }
 													//-->
-												</script>
+                                                </script>
 												<script type="text/javascript">
-													//<!--
-													// Calendar callback. When a date is clicked on the calendar
-													// this function is called so you can do as you want with it
-													function CalendarCallback(date, month, year) {
-														date = month + '/' + date + '/' + year;
-														document.modif_rep.TEMP_MENSAJE_FECHA.value = date;
-													}
+                                                    //<!--
+                                                    // Calendar callback. When a date is clicked on the calendar
+                                                    // this function is called so you can do as you want with it
+                                                    function CalendarCallback(date, month, year) {
+                                                        date = month + '/' + date + '/' + year;
+                                                        document.modif_rep.TEMP_MENSAJE_FECHA.value = date;
+                                                    }
 													// -->
-												</script>
+                                                </script>
 											</td>
 										</tr>
 										<tr>
@@ -896,50 +1068,50 @@ case "1"
 							</tr>
 		
 							<script language="javascript">
-								function function_reprocesos() {
-									document.getElementById("reprocesos").value = "reprocesar";
-									document.getElementById("modif_rep").submit();
-								}
-								function Remplace(expr) {
-									var new_name = expr.value;
-									var Forbidden_char = "\\/:*?\"\'<>|;,.~ &";
-									var i = 0;
-									for (var i = 0; i <= new_name.length; i++) {
-										for (var j = 0; j < Forbidden_char.length; j++) {
-											if (new_name.charAt(i) == Forbidden_char.charAt(j)) {
-												new_name = new_name.substring(0, i) + '_' + new_name.substring(i + 1);
-											}
-										}
-									}
-									expr.value = new_name;
-								}
-								function ValidateForm() {
-									var msg = "";
-									if (document.modif_rep.file_name.value == "") { msg = "- el archivo no tiene nombre.\n" };
-									if (document.modif_rep.report_name.value == "") { msg += "- el reporte no tiene nombre.\n" };
-									if (document.modif_rep.carpeta.value == "") { msg += "- no hay nombre de carpeta." };
-									if ((document.modif_rep.TEMP_MENSAJE_FECHA.value != '') && (document.modif_rep.TEMP_MENSAJE.value == "")) { msg += "- Ingresar un mensaje" };
+                                function function_reprocesos() {
+                                    document.getElementById("reprocesos").value = "reprocesar";
+                                    document.getElementById("modif_rep").submit();
+                                }
+                                function Remplace(expr) {
+                                    var new_name = expr.value;
+                                    var Forbidden_char = "\\/:*?\"\'<>|;,.~ &";
+                                    var i = 0;
+                                    for (var i = 0; i <= new_name.length; i++) {
+                                        for (var j = 0; j < Forbidden_char.length; j++) {
+                                            if (new_name.charAt(i) == Forbidden_char.charAt(j)) {
+                                                new_name = new_name.substring(0, i) + '_' + new_name.substring(i + 1);
+                                            }
+                                        }
+                                    }
+                                    expr.value = new_name;
+                                }
+                                function ValidateForm() {
+                                    var msg = "";
+                                    if (document.modif_rep.file_name.value == "") { msg = "- el archivo no tiene nombre.\n" };
+                                    if (document.modif_rep.report_name.value == "") { msg += "- el reporte no tiene nombre.\n" };
+                                    if (document.modif_rep.carpeta.value == "") { msg += "- no hay nombre de carpeta." };
+                                    if ((document.modif_rep.TEMP_MENSAJE_FECHA.value != '') && (document.modif_rep.TEMP_MENSAJE.value == "")) { msg += "- Ingresar un mensaje" };
 
-									if (msg == "") return true;
+                                    if (msg == "") return true;
 
-									alert("Verifica los datos : \n" + msg);
-									return false;
-								}
-								function check_opcion(param, op) {
-									var error = "";
-									for (var i = 0; i < op.length; i++) {
-										if ((op[i].value == 0) && (param[i].value == "")) {
-											{
-												if (error != "") { error = error + "," + (i + 1); }
-												else { error = error + (i + 1); }
+                                    alert("Verifica los datos : \n" + msg);
+                                    return false;
+                                }
+                                function check_opcion(param, op) {
+                                    var error = "";
+                                    for (var i = 0; i < op.length; i++) {
+                                        if ((op[i].value == 0) && (param[i].value == "")) {
+                                            {
+                                                if (error != "") { error = error + "," + (i + 1); }
+                                                else { error = error + (i + 1); }
 
-											}
-										}
-									}
-									if (error == "") { return 0; }
-									else { return error; }
-								}
-							</script>
+                                            }
+                                        }
+                                    }
+                                    if (error == "") { return 0; }
+                                    else { return error; }
+                                }
+                            </script>
 						</table>
 					</form>
 				</center>

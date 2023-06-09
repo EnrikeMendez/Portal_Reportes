@@ -128,7 +128,7 @@ call check_session()
 	dim sNombreReporte
 	
 	Id_cron = Request.QueryString("Num")
-	arrNombreReporte = GetArrayRS("SELECT Name FROM rep_detalle_reporte repdet WHERE repdet.ID_CRON = " & Id_cron)
+	'arrNombreReporte = GetArrayRS("SELECT Name FROM rep_detalle_reporte repdet WHERE repdet.ID_CRON = " & Id_cron)
 	
 	if not IsArray(arrNombreReporte) then 
 		sNombreReporte = ""
