@@ -47,6 +47,7 @@ Select Case Request.Form("Etape")
 			<link href="include/logis.css" type="text/css" rel="stylesheet" />
 			<link href="css/logis_style.min.css" type="text/css" rel="stylesheet" />
 			<script src="js/jquery-1.3.2.min.js"></script>
+			<script src="js/main.js"></script>
 			<script language="JavaScript" src="./include/tigra_tables.js"></script>
 			<script type="text/javascript" src="js/reports.min.js"></script>
 			<script language="JavaScript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -65,9 +66,10 @@ Select Case Request.Form("Etape")
                     }
                 );
 
-                function tmp_ws() {
-					const xhr = new XMLHttpRequest();
-                    const url = "http://localhost:62663/Report_Service.svc/GetConsultaReportes?usuario=HECTORRR";
+				function tmp_ws() {
+					const xhr = new XMLHttpRequest('select_activos');
+					var status = document.getElementById('select_activos').value.trim();
+                    const url = urlWebService + "GetConsultaReportes?usuario=HECTORRR&status=" + status;
                     var someHandler = "ok";
 
                     xhr.onreadystatechange = function () {
@@ -88,31 +90,33 @@ Select Case Request.Form("Etape")
                     var htmlTable = "";
                     var SQL = "";
                     var bandera = 0;
-
+                    $("#tbResult").empty();
                     if (arrayRS3.length == 0) {
                         htmlTable = htmlTable + "<tr class='center'>";
                         htmlTable = htmlTable + "	<td colspan='9' class='center'>";
                         htmlTable = htmlTable + "		No hay reportes registrados.";
                         htmlTable = htmlTable + "	</td>";
                         htmlTable = htmlTable + "</tr>";
-                    } else {
+					} else {
+                        
 						for (i = 0; i < arrayRS3.length; i++) {
-							htmlTable = "";
-							htmlTable = htmlTable + "<tr class='f'>";
+							htmlTable = "";						
+
+							htmlTable = htmlTable + "<tr>";
                             // No.
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].ID_CRON + "</td>";
                             // Nombre
                             if (arrayRS3[i].NVL_ACTIVE == "0") {
                                 htmlTable = htmlTable + "<td><font color='red'>" + arrayRS3[i].NOMBRE + "</font></td>";
                             } else {
-                                htmlTable = htmlTable + "<td>" + arrayRS3[i].NOMBRE + "</td>";
+                                htmlTable = htmlTable + "<td>" + arrayRS3[i].NOMBRE+"</td>";
 							}
                             //' Area Negocio
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].AREA_NEGOCIO + "</td>";
                             //' Prioridad
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].PRIORIDAD + "</td>";
                             //Tipo Reporte
-							htmlTable = htmlTable + "<td align'left'>" + arrayRS3[i].ID_REP + " - " + arrayRS3[i].REP_NAME + "</td>";
+							htmlTable = htmlTable + "<td align'left'>" + arrayRS3[i].ID_REP + "</td>";
                             //Lista Correo -> Normal
                             htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE + "'); name='nVer'>Ver</a></td>";
                             //Lista Correo -> modificar
@@ -123,7 +127,7 @@ Select Case Request.Form("Etape")
                             htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].CLIENTE + " - " + arrayRS3[i].INIT_CAP + "</td>";
                             //Frecuencia
                             htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].FRECUENCIA + " - " + arrayRS3[i].DESCRIPCION + "</td>";
-                            htmlTable = htmlTable + "<td align='center' class='delC'><a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'mod');>Modificar</a>";
+                            htmlTable = htmlTable + "<td align='center' class='delC'><a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'mod');>Modificar</a>_|_";
                             //Accion
                             if (arrayRS3[i].NVL_ACTIVE == "1") {
                                 htmlTable = htmlTable + "<a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'desactivar');>Desactivar</a></td>";
@@ -147,14 +151,33 @@ Select Case Request.Form("Etape")
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].HORA + "</td>";
                             //Minuto(s)
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].MINUTO + "</td>";
-                            //Usuario creacion
-                            htmlTable = htmlTable + "<td>" + arrayRS3[i].CREATED_BY + "</td>";
+							//Usuario creacion
+							if (arrayRS3[i].USR_CREACION == null) {
+                                htmlTable = htmlTable + "<td></td>";
+							} else {
+                                htmlTable = htmlTable + "<td>" + arrayRS3[i].USR_CREACION + "</td>";
+							}
+                            
                             //Fecha creacion
-                            htmlTable = htmlTable + "<td>" + arrayRS3[i].DATE_CREATED + "</td>";
+							if (arrayRS3[i].CREACION == null) {
+                                htmlTable = htmlTable + "<td></td>";
+							} else {
+                                htmlTable = htmlTable + "<td>" + arrayRS3[i].CREACION + "</td>";
+							}
+                            
                             //Usuario modificacion
-                            htmlTable = htmlTable + "<td>" + arrayRS3[i].MODIFIED_BY + "</td>";
+                            if (arrayRS3[i].USUARIO == null) {
+                                htmlTable = htmlTable + "<td></td>";
+							} else {
+                                htmlTable = htmlTable + "<td>" + arrayRS3[i].USUARIO + "</td>";
+							}
                             //Fecha modificacion
-                            htmlTable = htmlTable + "<td>" + arrayRS3[i].DATE_MODIFIED + "</td>";
+							if (arrayRS3[i].MODIFICACION == null) {
+                                htmlTable = htmlTable + "<td></td>";
+							} else {
+                                htmlTable = htmlTable + "<td>" + arrayRS3[i].MODIFICACION + "</td>";
+							}
+                            
                             //Param_1
                             if (arrayRS3[i].PARAM_1 == undefined) {
                                 htmlTable = htmlTable + "<td></td>";
@@ -178,7 +201,7 @@ Select Case Request.Form("Etape")
                                 }
                             }
                             //Param_3
-                            if (arrayRS3[i].PARAM_1 == undefined) {
+                            if (arrayRS3[i].PARAM_3 == undefined) {
                                 htmlTable = htmlTable + "<td></td>";
                             }
                             else {
@@ -189,7 +212,7 @@ Select Case Request.Form("Etape")
                                 }
                             }
                             //Param_4
-                            if (arrayRS3[i].PARAM_1 == undefined) {
+                            if (arrayRS3[i].PARAM_4 == undefined) {
                                 htmlTable = htmlTable + "<td></td>";
                             }
                             else {
@@ -202,7 +225,7 @@ Select Case Request.Form("Etape")
                             //Command
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].COMMAND.trim() + "</td>"
 
-							htmlTable = htmlTable + "<tr>"
+							htmlTable = htmlTable + "</tr>"
                             $("#tbResult").append(htmlTable);
 						}
                     }
@@ -215,7 +238,8 @@ Select Case Request.Form("Etape")
 			
 			<script type="text/javascript">
 
-                function FilterTableBy2Params() {
+				function FilterTableBy2Params() {
+
                     var input = document.getElementById("table-buscar");
                     var combo = document.getElementById("select_activos");
                     var filterTxt = input.value.toUpperCase();
@@ -312,8 +336,8 @@ Select Case Request.Form("Etape")
 			<!-- CHG-DESA-30062021-01 ->  -->
 			<title>Administracion de reportes</title>
 		</head>
-		<!-- <body onload="showActive()">
-			<-	CHG-DESA-30062021-01   --
+		<body onload="showActive()">
+			<!-- <-	CHG-DESA-30062021-01   -->
 			<div id="dvloading" style="display:block!important;visibility:visible!important;">
 				<center>Procesando </center>
 				<center><img alt=". . ." id="imgPuntos" src="images/puntosSuspensivos.gif" /></center>
@@ -329,7 +353,7 @@ Select Case Request.Form("Etape")
 			'SQL = SQL & " , case when  rep.id_rep in (80,98,106,108,110,114,117,118,126,130,142,159,160, 169,171,174,179,175,176,183,186,199,201,221,228,236,240,242,244,248,249,260,263,287,288,290) then 'DISTRIBUCION' else 'COEX' end Area_Negocio" & VbCrLf 
 			'SQL = SQL & " , cron.priorite as Prioridad" & VbCrLf 
 			'SQL = SQL & " , tipo.DESCRIPCION as frecuencia_desc, repdet.days_deleted as dias_servidor" & VbCrLf 
-			'SQL = SQL & " , cron.jours AS DIA_MES, cron.jour_semaine AS DIA_SEMANA" & VbCrLf 
+			'SQL = SQL & " , cron.jours AS DIA_MES, cron.jour_Lsemaine AS DIA_SEMANA" & VbCrLf 
 			'SQL = SQL & " , cron.heures AS HORA" & VbCrLf 
 			'SQL = SQL & " , cron.minutes AS MINUTO" & VbCrLf 
 			'SQL = SQL & " ,repdet.CLIENTE || ' ' || repdet.NAME AS Num_Nom" & VbCrLf 
@@ -415,8 +439,7 @@ Select Case Request.Form("Etape")
 								Estatus:
 							</label>
 							<select name="cars" id="select_activos" class="form-control rounded-cmb">
-								<option value="" selected>Todos</option>
-								<option value="Desactivar">Activos</option>
+								<option value="Desactivar" selected>Activos</option>
 								<option value="Reactivar">No activos</option>
 							</select>
 						</td>
@@ -654,34 +677,16 @@ Select Case Request.Form("Etape")
 			select_activos.addEventListener("change", function()
 			{
 				showLoading();
-				//$TableFilter("#select_reporte", this.value);
+				$TableFilter("#select_reporte", this.value);
 				FilterTableBy2Params();
 
 			});
 			//CHG-DESA-30062021-01	->
 		
 			$TableFilter = function(id, value)
-			{
-				var rows = document.querySelectorAll(id + ' tbody tr');
-				var estatus = document.getElementById("select_activos").value.toLowerCase().trim();
-			
-				for(var i = 0; i < rows.length; i++){
-					var showRow = false;
-				
-					var row = rows[i];
-					row.style.display = 'none';
-				
-					for(var x = 0; x < row.childElementCount; x++){
-						if(row.children[x].textContent.toLowerCase().indexOf(value.toLowerCase().trim()) > -1 && row.children[10].textContent.toLowerCase().indexOf(estatus) > -1){
-							showRow = true;
-							break;
-						}
-					}
-				
-					if(showRow){
-						row.style.display = null;
-					}
-				}
+			{   
+				showActive();
+				tmp_ws();
 			}
 		</script>
 <%
