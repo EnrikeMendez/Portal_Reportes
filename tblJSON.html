@@ -1,0 +1,90 @@
+<html>
+<head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+   <style>
+      table, th, td { border: 1px solid black; border-collapse: collapse; }
+      td, th {padding: 10px;}
+   </style>
+</head>
+<body>
+   <h2>Convert JSON dat
+a into a html table using Jquery</h2>
+   <p>Click the following button to convert JSON results into HTML table</p> <br>
+   <button id="btn" onclick="buildHtmlTable('#tblDatos');"> Click Here </button> <br>
+   <textarea id="txaDatos" name="txaDatos" style="width: 90%;height:30%;"></textarea>
+   <h3> Resulting Table: </h3> 
+   <div id="container"></div>
+   <table id="tblDatos" name="tblDatos">
+		</table>
+   <script>
+      var myList = [
+  { "name": "abc", "age": 50 },
+  { "age": "25", "hobby": "swimming" },
+  { "name": "xyz", "hobby": "programming" }
+];
+
+	myList = [{'squadName': 'Super hero squad',  'homeTown': 'Metro City',  'formed': 2016,  'secretBase': 'Super tower',  'active': true,  'members': [    {      'name': 'Molecule Man',      'age': 29,      'secretIdentity': 'Dan Jukes',      'powers': [        'Radiation resistance',        'Turning tiny',        'Radiation blast'      ]    },    {      'name': 'Madame Uppercut',      'age': 39,      'secretIdentity': 'Jane Wilson',      'powers': [        'Million tonne punch',        'Damage resistance',        'Superhuman reflexes'      ]    },    {      'name': 'Eternal Flame',      'age': 1000000,      'secretIdentity': 'Unknown',      'powers': [        'Immortality',        'Heat Immunity',        'Inferno',        'Teleportation',        'Interdimensional travel'      ]    }  ]}];
+
+// Builds the HTML Table out of myList.
+function buildHtmlTable(selector) {
+  myList = 
+  
+  var columns = addAllColumnHeaders(myList, selector);
+
+  for (var i = 0; i < myList.length; i++) {
+    var row$ = $('<tr/>');
+    for (var colIndex = 0; colIndex < columns.length; colIndex++) {
+      var cellValue = myList[i][columns[colIndex]];
+      if (cellValue == null) cellValue = "";
+      row$.append($('<td/>').html(cellValue));
+    }
+    $(selector).append(row$);
+  }
+}
+
+// Adds a header row to the table and returns the set of columns.
+// Need to do union of keys from all records as some records may not contain
+// all records.
+function addAllColumnHeaders(myList, selector) {
+  var columnSet = [];
+  var headerTr$ = $('<tr/>');
+
+  for (var i = 0; i < myList.length; i++) {
+    var rowHash = myList[i];
+    for (var key in rowHash) {
+      if ($.inArray(key, columnSet) == -1) {
+        columnSet.push(key);
+        headerTr$.append($('<th/>').html(key));
+      }
+    }
+  }
+  $(selector).append(headerTr$);
+
+  return columnSet;
+}
+   </script> 
+ </body>
+</html>
+<!--
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-3.6.3.slim.min.js" integrity="sha256-ZwqZIVdD3iXNyGHbSYdsmWP//UBokj2FHAxKuSBKDSo=" crossorigin="anonymous"></script>
+		<script src="C:/Users/usuario/source/repos/wcf/Portal_Reportes/js/jenrike.js"></script>
+		<script type="text/javascript">
+			function pintarTabla()
+			{
+				var json = "{'squadName': 'Super hero squad',  'homeTown': 'Metro City',  'formed': 2016,  'secretBase': 'Super tower',  'active': true,  'members': [    {      'name': 'Molecule Man',      'age': 29,      'secretIdentity': 'Dan Jukes',      'powers': [        'Radiation resistance',        'Turning tiny',        'Radiation blast'      ]    },    {      'name': 'Madame Uppercut',      'age': 39,      'secretIdentity': 'Jane Wilson',      'powers': [        'Million tonne punch',        'Damage resistance',        'Superhuman reflexes'      ]    },    {      'name': 'Eternal Flame',      'age': 1000000,      'secretIdentity': 'Unknown',      'powers': [        'Immortality',        'Heat Immunity',        'Inferno',        'Teleportation',        'Interdimensional travel'      ]    }  ]}";
+				
+				$("#tblDatos").html(buildTable(json));
+			}
+		</script>
+		<title>
+			Prueba de JSON to Table
+		</title>
+	</head>
+	<body onload="pintarTabla();">
+		<table id="tblDatos" name="tblDatos">
+		</table>
+	</body>
+</html>
+-->
