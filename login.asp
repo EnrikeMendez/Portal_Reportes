@@ -107,8 +107,9 @@ end if
 		<td align="center" colspan="2">
 			<img src="images/logo-logis-s.png" alt="Logo de Logis" style="width:300px;" />
 		</td>
-	</tr>
+	</tr>		  
     <tr>
+		<td id="msg" style="display:none;"><label>hola mundo</label></td>
     <tr>
      <td colspan=2 valign=center align=center><br></td>
     </tr>

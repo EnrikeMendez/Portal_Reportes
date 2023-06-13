@@ -60,22 +60,27 @@ Select Case Request.Form("Etape")
                 var ContentType;
                 var DataType;
                 var ProcessData;
-                $(document).ready(
+				$(document).ready(
+
 					function () {
-						tmp_ws();
+						showLoading();
+						tmp_ws();						
                     }
                 );
 
 				function tmp_ws() {
 					const xhr = new XMLHttpRequest('select_activos');
 					var status = document.getElementById('select_activos').value.trim();
-                    const url = urlWebService + "GetConsultaReportes?usuario=HECTORRR&status=" + status;
+                    var usr = '<%=Session("array_user")(0,0)%>';
+                    const url = urlWebService + "GetConsultaReportes?usuario="+usr+"&status=" + status;
                     var someHandler = "ok";
 
                     xhr.onreadystatechange = function () {
                         if (xhr.readyState == XMLHttpRequest.DONE) {
-                            mostrarResultado(xhr.responseText);
+							mostrarResultado(xhr.responseText);
+
                         }
+
                     }
 
                     xhr.open("GET", url, true);
@@ -102,7 +107,7 @@ Select Case Request.Form("Etape")
 						for (i = 0; i < arrayRS3.length; i++) {
 							htmlTable = "";						
 
-							htmlTable = htmlTable + "<tr>";
+                            htmlTable = htmlTable + "<tr>";
                             // No.
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].ID_CRON + "</td>";
                             // Nombre
@@ -120,19 +125,27 @@ Select Case Request.Form("Etape")
                             //Lista Correo -> Normal
                             htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE + "'); name='nVer'>Ver</a></td>";
                             //Lista Correo -> modificar
-                            htmlTable = htmlTable + "<td class='delC' style='font-size: 9.5px;'><a title='Modificar la lista de correos' href=javascript:modif_list(" + arrayRS3[i].MAIL_OK + ", " + arrayRS3[i].CLIENTE + ");>Mod._norm.</a></td>";
+							htmlTable = htmlTable + '<td class="delC" style="font - size: 9.5px; "><a title="Modificar la lista de correos" href=javascript:modif_list(' + arrayRS3[i].MAIL_OK + "," + arrayRS3[i].CLIENTE+');>Mod._norm.</a></td>';
                             //error
-                            htmlTable = htmlTable + "<td class='delC' style='font-size: 9.5px;'><a title='Modificar la lista de correos en caso de error' href=javascript:modif_list(" + arrayRS3[i].MAIL_ERROR + ", " + arrayRS3[i].CLIENTE + ");>Mod._err</a></td>";
+                            htmlTable = htmlTable + '<td class="delC" style="font-size: 9.5px; "><a title="Modificar la lista de correos en caso de error" href=javascript:modif_list(' + arrayRS3[i].MAIL_ERROR + "," + arrayRS3[i].CLIENTE +');>Mod._err</a></td>';
                             //Cliente
                             htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].CLIENTE + " - " + arrayRS3[i].INIT_CAP + "</td>";
-                            //Frecuencia
-                            htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].FRECUENCIA + " - " + arrayRS3[i].DESCRIPCION + "</td>";
-                            htmlTable = htmlTable + "<td align='center' class='delC'><a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'mod');>Modificar</a>_|_";
-                            //Accion
-                            if (arrayRS3[i].NVL_ACTIVE == "1") {
-                                htmlTable = htmlTable + "<a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'desactivar');>Desactivar</a></td>";
-                            } else {
-                                htmlTable = htmlTable + "<a href=javascript:modif_reporte(" + arrayRS3[i].ID_CRON + ", 'reactivar');>Reactivar</a></td>";
+							//htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON + "," + 0+');>Desactivar</a></td>';
+
+							//Frecuencia
+							htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].FRECUENCIA + " - " + arrayRS3[i].DESCRIPCION + "</td>";
+							//htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE + "'); name='nVer'>Ver</a></td>";
+							var tipo = 'mod';
+                            htmlTable = htmlTable + "<td align='center' class='delC'><a onclick=javascript:modif_reporte('" + arrayRS3[i].ID_CRON + "','" + tipo+"');>Modificar</a>_|_";
+							//Accion
+							
+
+							if (arrayRS3[i].NVL_ACTIVE == "1") {
+								//Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'desactivar');"">Desactivar</a></td>" & vbCrLf
+                                htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON + "," + 0+');>Desactivar</a></td>';
+							} else {
+								//Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'desactivar');"">Desactivar</a></td>" & vbCrLf
+                                htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON +","+ 1 + ');>Activar</a></td>';
 							}
 
                             //Dias en el servidor
@@ -147,7 +160,7 @@ Select Case Request.Form("Etape")
                                 htmlTable = htmlTable + arrayRS3[i].DIA_SEMANA;
                             }
                             htmlTable = htmlTable + "</td>";
-                            //Hora(s)
+                            //Hora(s)							
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].HORA + "</td>";
                             //Minuto(s)
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].MINUTO + "</td>";
@@ -228,8 +241,12 @@ Select Case Request.Form("Etape")
 							htmlTable = htmlTable + "</tr>"
                             $("#tbResult").append(htmlTable);
 						}
-                    }
-                }
+					}
+                    hideLoading();
+				}
+
+                
+
             </script>
 
 			<!-- <- CHG-DESA-30062021-01  -->
@@ -251,8 +268,7 @@ Select Case Request.Form("Etape")
                     var bgColor = 0;
 
                     try {
-                        showLoading();
-
+                        
                         tr = table.getElementsByClassName("f");
                         if (filterTxt != "" && filterCmb != "") {
                             filterType = 1;
@@ -613,6 +629,36 @@ Select Case Request.Form("Etape")
 		%>
 		<script language="javascript">
             //<!--
+			function agregarmod(id_rep, accion) {
+				var texto;
+                if (accion == 1) {
+					texto = "Activar";
+                } else {
+					texto = "Desactivar";
+                }
+                if (confirm('¿ Esta seguro de ' + texto + ' el reporte no. ' + id_rep + ' ?') == true) {
+						const xhr = new XMLHttpRequest('select_activos');
+                    const url = urlWebService + "GetStatusReporte?idreporte=" + id_rep + "&accion=" + accion;
+						
+						var someHandler = "ok";
+
+						xhr.onreadystatechange = function () {
+							if (xhr.readyState == XMLHttpRequest.DONE) {
+								if (accion == 1) {
+                                    location.href = ('/menu.asp?msg=' + "Reporte Activado.");
+								} else {
+                                    location.href = ('/menu.asp?msg=' + "Reporte Desactivado.");
+								}
+								
+
+							}
+						}
+						xhr.open("GET", url, true);
+						xhr.send();
+				}
+            }
+
+
             function modif_reporte(id_rep, accion) {
                 document.modif_rep.id_reporte.value = id_rep;
                 document.modif_rep.accion.value = accion;
@@ -676,17 +722,22 @@ Select Case Request.Form("Etape")
 				
 			select_activos.addEventListener("change", function()
 			{
-				showLoading();
+				hideLoading();
 				$TableFilter("#select_reporte", this.value);
-				FilterTableBy2Params();
+				
+				
+				
 
 			});
 			//CHG-DESA-30062021-01	->
 		
 			$TableFilter = function(id, value)
-			{   
-				showActive();
+			{
+				showLoading();
 				tmp_ws();
+				
+				
+				
 			}
 		</script>
 <%
@@ -745,7 +796,7 @@ case "1"
                         jQuery.extend(jQuery.validator.messages, {
                             required: "Campo obligatorio."
 						});
-                        tmp_ws();
+                        tmp_ws(status);
                     });
                 </script>
 				<style>
@@ -1115,7 +1166,7 @@ case "1"
                                     }
                                     if (error == "") { return 0; }
                                     else { return error; }
-                                }
+								}
                             </script>
 						</table>
 					</form>
