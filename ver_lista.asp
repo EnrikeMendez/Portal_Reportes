@@ -7,6 +7,134 @@ call check_session()
 %>
 <html>
 	<head>
+		<link href="include/logis.css" type="text/css" rel="stylesheet" />
+		<link href="css/logis_style.min.css" type="text/css" rel="stylesheet" />
+		<script src="js/jquery-1.3.2.min.js"></script>
+		<script src="js/main.js"></script>
+		<script language="JavaScript" src="./include/tigra_tables.js"></script>
+		<script type="text/javascript" src="js/reports.min.js"></script>
+		<script language="JavaScript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+		<script type="text/javascript">
+            var Type;
+            var Url;
+            var Data;
+            var ContentType;
+            var DataType;
+			var ProcessData;
+            var lista;
+            $(document).ready(
+
+                function () {
+                    showLoading();
+                    tmp_ws();
+                }
+            );
+
+            function tmp_ws() {
+                const xhr = new XMLHttpRequest('select_activos');
+				lista = '<%=Request.QueryString("liste")%>';
+                const url = urlWebService + "GetListaCorreos?lista=" + lista;
+                var someHandler = "ok";
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+                        mostrarResultado(xhr.responseText);
+
+                    }
+
+                }
+
+                xhr.open("GET", url, true);
+                xhr.send();
+            }
+            function mostrarResultado(wsResponseText) {
+                var objResult = JSON.parse(wsResponseText);
+                var info = objResult.GetListaCorreosResult;
+                var arrayRS3 = JSON.parse(info);
+
+                var i = 0;
+                var htmlTable = "";
+                var SQL = "";
+                var bandera = 0;
+                $("#tbResult").empty();
+                if (arrayRS3.length == 0) {
+                    htmlTable = htmlTable + "<tr class='center'>";
+                    htmlTable = htmlTable + "	<td colspan='9' class='center'>";
+                    htmlTable = htmlTable + "		no contactos.....";
+                    htmlTable = htmlTable + "	</td>";
+                    htmlTable = htmlTable + "</tr>";
+                } else {
+
+                    for (i = 0; i < arrayRS3.length; i++) {
+						htmlTable = htmlTable + arrayRS3[i].ID_DEST + ", ";                        
+					}
+					agregarlista(htmlTable.substr(0, htmlTable.length-2));
+                }
+                //hideLoading();
+			}
+			//sugunda funcion llena lista
+            function agregarlista(grupolista) {
+                const xhr = new XMLHttpRequest('select_activos');
+				var lista = '<%=Request.QueryString("liste")%>';
+                const url = urlWebService + "GetArmarContactos?mail_id=" + grupolista;
+                var someHandler = "ok";
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+                        mostrarLista(xhr.responseText);
+
+                    }
+
+                }
+
+                xhr.open("GET", url, true);
+                xhr.send();
+            }
+            function mostrarLista(wsResponseText) {
+                var objResult = JSON.parse(wsResponseText);
+                var info = objResult.GetArmarContactosResult;
+                var arrayRS3 = JSON.parse(info);
+
+                var i = 0;
+                var htmlTable = "";
+                var SQL = "";
+                var bandera = 0;
+                $("#tbResult").empty();
+                if (arrayRS3.length == 0) {
+                    htmlTable = htmlTable + "<tr class='center'>";
+                    htmlTable = htmlTable + "	<td colspan='9' class='center'>";
+                    htmlTable = htmlTable + "		no contactos.....";
+                    htmlTable = htmlTable + "	</td>";
+                    htmlTable = htmlTable + "</tr>";
+                } else {
+
+					for (i = 0; i < arrayRS3.length; i++) {
+						htmlTable = "";
+						htmlTable = htmlTable + "<tr>";
+                        htmlTable = htmlTable + "<td>" + arrayRS3[i].NOMBRE + "</td>";
+                        htmlTable = htmlTable + "<td><a href=" + "mailto:" + arrayRS3[i].MAIL + "" + ">" + arrayRS3[i].MAIL + "</a></td>";
+                        if (lista == "1") {
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].CLIENT_NUM + "</td>";
+                            htmlTable = htmlTable + "<td>" + arrayRS3[i].TERCERO + "</td>";
+						}
+						
+                        htmlTable = htmlTable + "</tr>"
+                        $("#tbResult").append(htmlTable);
+                    }
+
+                }
+                //hideLoading();
+            }
+
+
+
+
+
+
+
+        </script>
+
+
 		<style type="text/css">
 /* <- CHG-DESA-30062021-01 */
 			.trHeader
@@ -70,11 +198,11 @@ call check_session()
 			<%if Request.QueryString("liste") = "error" then Response.Write " en caso de error"%>
 		</title>
 	<!-- <- CHG-DESA-30062021-01 -->
-		<script type="text/javascript">
+		<script type="text/javascript">            
 			function Mostrar_AgregarCorreo() {
 				var IsPopUp = 0;
                 var sURI = window.location.search;
-				var arrParams = new URLSearchParams(sURI);
+				var arrParams = new URLSearchParams(sURI);                
 				var NumCte = localStorage.getItem('Cli');
 				var Id_Cron = localStorage.getItem('Id_Cron');
 
@@ -96,12 +224,12 @@ call check_session()
 	<!-- CHG-DESA-30062021-01 -> -->
 	</head>
 	<body onload="saveuri()">
-<!-- <- CHG-DESA-30062021-01 -->
+<!-- <- CHG-DESA-30062021-01 -->		
 		<center>
 			<table>
 				<tr>
 					<td colspan="2" style="text-align:right;">
-						<input type="button" class="buttonsBlue" onclick="Mostrar_AgregarCorreo()" value='Agregar contacto' />
+						<!--<input type="button" class="buttonsBlue" onclick="Mostrar_AgregarCorreo()" value='Agregar contacto' />-->
 					</td>
 				</tr>
 			</table>
@@ -229,22 +357,23 @@ end if
 						<%end if%>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody id="tbResult">
+					
 <%
-for i= 0 to UBound(arrayRS,2)
-	if i mod 2 = 0 then
-		Response.Write "<tr class='trBgColor'>" & vbCrLf & vbTab 
-	else
-		Response.Write "<tr>" & vbCrLf & vbTab 
-	end if
-	Response.Write "<td>" & arrayRS(0,i) &"</td>"  & vbCrLf & vbTab
-	Response.Write "<td><a href=""mailto:" & arrayRS(1,i) &""">" & arrayRS(1,i) &"</a></td>"  & vbCrLf & vbTab
-	if Request.QueryString("liste") = "1" then
-		Response.Write "<td>" & arrayRS(2,i) &"</td>"  & vbCrLf & vbTab
-		Response.Write "<td>" & arrayRS(3,i) &"</td>"  & vbCrLf 
-	end if	
-	Response.Write "</tr>" & vbCrLf 
-next
+'for i= 0 to UBound(arrayRS,2)
+'	if i mod 2 = 0 then
+'		Response.Write "<tr class='trBgColor'>" & vbCrLf & vbTab 
+'	else
+'		Response.Write "<tr>" & vbCrLf & vbTab 
+'	end if
+'	Response.Write "<td>" & arrayRS(0,i) &"</td>"  & vbCrLf & vbTab
+'	Response.Write "<td><a href=""mailto:" & arrayRS(1,i) &""">" & arrayRS(1,i) &"</a></td>"  & vbCrLf & vbTab
+'	if Request.QueryString("liste") = "1" then
+'		Response.Write "<td>" & arrayRS(2,i) &"</td>"  & vbCrLf & vbTab
+'		Response.Write "<td>" & arrayRS(3,i) &"</td>"  & vbCrLf 
+'	end if	
+'	Response.Write "</tr>" & vbCrLf 
+'next
 %>
 				</tbody>
 			</table>

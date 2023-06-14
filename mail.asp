@@ -20,6 +20,64 @@ Select Case Request("Etape")
 			<meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1" />
 			<link href="css/logis_style.css" media="all" type="text/css" rel="stylesheet" />
 			<title>Gestion de correos</title>
+			<script language="JavaScript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+			<script type="text/javascript"> 
+                var Type;
+                var Url;
+                var Data;
+                var ContentType;
+                var DataType;
+                var ProcessData;
+               
+                function tmp_ws() {
+                    const xhr = new XMLHttpRequest('select_activos');
+                    var status = document.getElementById('select_activos').value.trim();
+                    var usr = '<%=Session("array_user")(0,0)%>';
+                    const url = urlWebService + "GetConsultaReportes?usuario=" + usr + "&status=" + status;
+                    var someHandler = "ok";
+
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == XMLHttpRequest.DONE) {
+                            mostrarResultado(xhr.responseText);
+
+                        }
+
+                    }
+
+                    xhr.open("GET", url, true);
+                    xhr.send();
+                }
+                function mostrarResultado(wsResponseText) {
+                    var objResult = JSON.parse(wsResponseText);
+                    var info = objResult.GetConsultaReportesResult;
+                    var arrayRS3 = JSON.parse(info);
+
+                    var i = 0;
+                    var htmlTable = "";
+                    var SQL = "";
+                    var bandera = 0;
+                    $("#tbResult").empty();
+                    if (arrayRS3.length == 0) {
+                        htmlTable = htmlTable + "<tr class='center'>";
+                        htmlTable = htmlTable + "	<td colspan='9' class='center'>";
+                        htmlTable = htmlTable + "		No hay reportes registrados.";
+                        htmlTable = htmlTable + "	</td>";
+                        htmlTable = htmlTable + "</tr>";
+                    } else {
+
+                        for (i = 0; i < arrayRS3.length; i++) {
+                            htmlTable = "";
+
+                            
+                            htmlTable = htmlTable + "</tr>"
+                            $("#tbResult").append(htmlTable);
+                        }
+                    }
+                    //hideLoading();
+                }
+            </script>
+			
 			<script>
 				//<- CHG-DESA-30062021-01
 				function validaOk()
@@ -165,7 +223,7 @@ end if
 					<tbody>
 						<%if Request("msg") <> "" then	Response.Write "<tr><td align=center colspan=2><font color=red size=2>" & Request("msg") & "</font></td></tr>" %>
 					</tbody>
-				</table>
+				</table>			
 		<script LANGUAGE="JavaScript">
 			function check_data()
 			{

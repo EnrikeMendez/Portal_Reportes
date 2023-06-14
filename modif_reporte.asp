@@ -17,23 +17,23 @@ Function NVL(str)
 End Function
 
 	' <- CHG-DESA-30062021-01
-			dim arr1(3), arr2(9)
+			'dim arr1(3), arr2(9)
 
 			'14,173,24
-			arr1(0) = "ALEJANDROLE"
-			arr1(1) = "JAVIERD"
-			arr1(2) = "ALMALFS"
+			'arr1(0) = "ALEJANDROLE"
+			'arr1(1) = "JAVIERD"
+			'arr1(2) = "ALMALFS"
 
 			'174
-			arr2(0) = "YAZMINCC"
-			arr2(1) = "EVELINGB"
-			arr2(2) = "ELIZABETHBM"
-			arr2(3) = "LUISFR"
-			arr2(4) = "DULCELO"
-			arr2(5) = "ALOURDESC"
-			arr2(6) = "ALEXANDRAMM"
-			arr2(7) = "LGABRIELAM"
-			arr2(8) = "MLOURDESB"
+			'arr2(0) = "YAZMINCC"
+			'arr2(1) = "EVELINGB"
+			'arr2(2) = "ELIZABETHBM"
+			'arr2(3) = "LUISFR"
+			'arr2(4) = "DULCELO"
+			'arr2(5) = "ALOURDESC"
+			'arr2(6) = "ALEXANDRAMM"
+			'arr2(7) = "LGABRIELAM"
+			'arr2(8) = "MLOURDESB"
 	' CHG-DESA-30062021-01 ->
 
 Select Case Request.Form("Etape")
@@ -122,14 +122,14 @@ Select Case Request.Form("Etape")
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].PRIORIDAD + "</td>";
                             //Tipo Reporte
 							htmlTable = htmlTable + "<td align'left'>" + arrayRS3[i].ID_REP + "</td>";
-                            //Lista Correo -> Normal
-                            htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE + "'); name='nVer'>Ver</a></td>";
+							//Lista Correo -> Normal							
+                            htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE +"'); name='nVer'>Ver</a></td>";
                             //Lista Correo -> modificar
 							htmlTable = htmlTable + '<td class="delC" style="font - size: 9.5px; "><a title="Modificar la lista de correos" href=javascript:modif_list(' + arrayRS3[i].MAIL_OK + "," + arrayRS3[i].CLIENTE+');>Mod._norm.</a></td>';
                             //error
                             htmlTable = htmlTable + '<td class="delC" style="font-size: 9.5px; "><a title="Modificar la lista de correos en caso de error" href=javascript:modif_list(' + arrayRS3[i].MAIL_ERROR + "," + arrayRS3[i].CLIENTE +');>Mod._err</a></td>';
                             //Cliente
-                            htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].CLIENTE + " - " + arrayRS3[i].INIT_CAP + "</td>";
+							htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].CLIENTE + " - " + arrayRS3[i].INIT_CAP + "</td>";                            
 							//htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON + "," + 0+');>Desactivar</a></td>';
 
 							//Frecuencia
@@ -502,7 +502,7 @@ Select Case Request.Form("Etape")
 			<!-- CHG-DESA-30062021-01 ->  -->
 		</thead>
 		<tbody id="tbResult">
-
+			
 		</tbody>
 		
 		<%
@@ -682,7 +682,7 @@ Select Case Request.Form("Etape")
 
             //<- CHG-DESA-30062021-01
             function ver_lista(lista, Num, Cli) {
-                localStorage.setItem('Cli', Cli);
+				localStorage.setItem('Cli', Cli);                
                 localStorage.setItem('sURI_list', "ver_lista.asp?liste=" + lista + "&Num=" + Num);
                 localStorage.setItem('Id_Cron', Num);
                 localStorage.setItem('pop', 1);
