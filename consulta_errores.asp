@@ -23,6 +23,7 @@ call check_session()
 
     <!--ORP: WS AJAX-->
     <script src="js/jquery-1.3.2.min.js"></script>
+    <script src="js/main.js"></script>
     <!--ORP: WS AJAX-->
 
     <style type="text/css">
@@ -209,7 +210,7 @@ call check_session()
         //< !--ORP: WS AJAX-- >
         function ftn_GetConsultaErrores() {
             const xhr = new XMLHttpRequest();
-            const url = "http://localhost:51687/Report_Service.svc/GetConsultaErrores";
+            const url = urlWebService + "GetConsultaErrores";
 
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == XMLHttpRequest.DONE) {

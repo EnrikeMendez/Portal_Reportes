@@ -20,7 +20,8 @@ Select Case Request("Etape")
 			<meta http-equiv="Content-Type" content="text/html;" charset="iso-8859-1" />
 			<link href="css/logis_style.css" media="all" type="text/css" rel="stylesheet" />
 			<title>Gestion de correos</title>
-			<script language="JavaScript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+			<script src="js/jquery-1.3.2.min.js"></script>
+			<script src="js/main.js"></script>
 
 			<script type="text/javascript"> 
                 var Type;
@@ -220,8 +221,10 @@ end if
 				<hr/>
 				
 				<table border="0" width="350" class="tblMenu">
-					<tbody>
-						<%if Request("msg") <> "" then	Response.Write "<tr><td align=center colspan=2><font color=red size=2>" & Request("msg") & "</font></td></tr>" %>
+					<!--<<MRG-->
+					<!--<tbody>-->
+					<tbody id="tbmsg">
+						<!--<%if Request("msg") <> "" then	Response.Write "<tr><td align=center colspan=2><font color=red size=2>" & Request("msg") & "</font></td></tr>" %>-->
 					</tbody>
 				</table>			
 		<script LANGUAGE="JavaScript">
@@ -257,8 +260,63 @@ end if
 				if (msg != "")
 					{alert("Verifique los datos :\n"+msg);}
 				else
-					document.mail_form.submit();
-			}
+                    tmp_ws2()
+                //document.mail_form.submit();
+            }
+            function tmp_ws2() {
+                var NumCli = "";
+                var Tercero = false;
+                var id_mail
+                var nombre;
+                var correo;
+                var hdnURI;
+                if (document.getElementById("hdn_cli_num").value != "") {
+                    NumCli = document.getElementById("hdn_cli_num").value;
+                }
+                else if (document.getElementById("cli_num").value != "") {
+                    NumCli = document.getElementById("cli_num").value;
+                }
+                Tercero = document.getElementById("hdnTercero").value;
+                //alert(document.getElementById("hdnTercero").value);
+                id_mail = document.getElementById("id_mail").value;
+                nombre = document.getElementById("txtNombre").value;
+               // alert(document.getElementById("txtNombre").value)
+                correo = document.getElementById("txtCorreo").value;
+
+                status = document.getElementById("chkStatus").value;
+
+                hdnURI = document.getElementById("hdnURI").value;
+
+                const xhr = new XMLHttpRequest();
+                const url = urlWebService + "GetMail?Id_Cron=" + $("#hdn_Id_Cron").val() + "&NumCli=" + NumCli + "&id_mail=" + id_mail + "&nombre=" + nombre + "&correo=" + correo + "&Tercero=" + Tercero + "&status=" + status + "&hdnURI=" + hdnURI + ")";
+                var someHandler = "ok";
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == XMLHttpRequest.DONE) {
+                        mostrarResultado2(xhr.responseText);
+                    }
+                }
+
+                xhr.open("GET", url, true);
+                xhr.send();
+            }
+            function mostrarResultado2(wsResponseText) {
+                var objResult = JSON.parse(wsResponseText);
+                var info = objResult.GetMailResult;
+                //var arrayRS3 = JSON.parse(info);
+                //document.mail_form.submit();
+                var htmlTable = "";
+                $("#tbmsg").empty;
+                htmlTable = htmlTable + "<tr>";
+                htmlTable = htmlTable + "	<td align='center' colspan='2'>";
+                htmlTable = htmlTable + "		<font color = 'red' size = '2' > ";
+                htmlTable = htmlTable + info;
+                htmlTable = htmlTable + "		</font>";
+                htmlTable = htmlTable + "	</td>";
+                htmlTable = htmlTable + "</tr>";
+                $("#tbmsg").append(htmlTable);
+            }
+
         </script>
 		<!-- <- CHG-DESA-30062021-01 -->
 		<form name="mail_form"  action="<%=asp_self()%>?etape=1&cli_num=<%=HTMLEscape(cliente)%>" method="post">
@@ -322,8 +380,8 @@ end if
 					</tr>
 					<tr>
 						<td colspan="2" align="center">
-							<input type="hidden" name="id_mail" value="<%=Request.QueryString("mail")%>" />
-							<input type="hidden" name="hdn_Id_Cron" value="<%=Request.QueryString("Id_Cron")%>" />
+							<input type="hidden" id="id_mail" name="id_mail" value="<%=Request.QueryString("mail")%>" />
+							<input type="hidden" id="hdn_Id_Cron" name="hdn_Id_Cron" value="<%=Request.QueryString("Id_Cron")%>" />
 							<input type="button" id="cmdValida" onClick="check_data();" class="buttonsBlue" value="Agregar" />
 							<br><br>
 						</td>
@@ -335,144 +393,144 @@ end if
 		
 <%
 case "1"
-		dim rst, msg, status
-	'<- CHG-DESA-30062021-01
-	dim allOk, cte
-	allOk = 0
-		
-	dim tercer
-	dim idMail
-	NumCli = SQLescape(Request.Form("hdn_cli_num"))
-	tercer = SQLescape(Request.Form("hdnTercero"))
-	cte = Request.QueryString("cliente")
-	'CHG-DESA-30062021-01 ->
-
-	set rst = Server.CreateObject("ADODB.Recordset")
-			
-		status = Request.Form("status") 
-		if status = "" then Status = 0
-		
-		SQL = "select 1 from eclient where cliclef='" & SQLescape(Request.Form("hdn_cli_num")) & "'"
-	
-		'<- CHG-DESA-30062021-01
-		Dim Id_Cron , mail_ok
-		Id_Cron =SQLescape(Request.Form("hdn_Id_Cron"))
-
-		SQL = " select MAIL_OK,ID_CRON from rep_detalle_reporte where ID_CRON = '" & SQLEscape(Id_Cron) & "' "
-
-		arrayRS = GetArrayRS(SQL)
-		if IsArray(arrayRS) then
-			mail_ok = arrayRS(0,0)
-		end if
-	
-		if NumCli <> "" then
-			SQL = "select 1 from eclient where cliclef='" & NumCli & "'"
-		else
-			if SQLescape(Request.Form("cli_num")) <> "" then
-				SQL = "select 1 from eclient where cliclef='" & Request.Form("cli_num") & "'"
-			end if
-		end if
-		arrayRS = GetArrayRS(SQL)
-		if not IsArray(arrayRS) then
-			if NumCli <> "" then
-				Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Este numero de cliente '" & NumCli & "' no existe.")
-			else
-				Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Este numero de cliente '" & SQLescape(Request.Form("cli_num")) & " no existe.")
-			end if	
-		end if
-				
-		if Request.Form("id_mail") <> "" then
-			if NumCli <> "" then
-				SQL = " update rep_mail set nombre= '" & SQLEscape(Request.Form("nombre")) &"', "& _
-					  " mail = '" & SQLEscape(Request.Form("correo")) & "', " & _
-					  " client_num = '" & NumCli & "', " & _
-					  " tercero = '" & SQLEscape(Request.Form("hdnTercero")) &"', " & _
-					  " status = '" & status &"' " & _
-					  " where id_mail= '" & SQLEscape(Request.Form("id_mail")) &"' "
-			else
-				SQL = " update rep_mail set nombre= '" & SQLEscape(Request.Form("nombre")) &"', "& _
-					  " mail = '" & SQLEscape(Request.Form("correo")) & "', " & _
-					  " client_num = '" & SQLescape(Request.Form("cli_num")) & "', " & _
-					  " tercero = '" & SQLEscape(Request.Form("hdnTercero")) &"', " & _
-					  " status = '" & status &"' " & _
-					  " where id_mail= '" & SQLEscape(Request.Form("id_mail")) &"' "
-			end if
-			msg = "Contacto Modificado"
-			allOk = 1
-		else
-			'verificacion que el correo es unico en la base
-			if NumCli <> "" then
-				SQL = " select 1 from rep_mail where mail = '" & SQLEscape(Request.Form("correo")) & "' " & _
-					  " and CLIENT_NUM = '" & NumCli & "'"
-			else
-				SQL = " select 1 from rep_mail where mail = '" & SQLEscape(Request.Form("correo")) & "' " & _
-						" and CLIENT_NUM = '" & SQLescape(Request.Form("cli_num")) & "'"
-			end if
-			arrayRS = GetArrayRS(SQL)
-
-			if  IsArray(arrayRS) then
-				Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Este correo ya existe para este cliente.")
-			end if
-			
-			'verificar que no se capturen correos de Logis para otro numero de cliente que el 9929
-		    if NumCli <> "" then
-'<JEMV
-'				if InStr(LCase(Request.Form("correo")), "@logis.com.mx") > 0 and NumCli <> "9929" then
-'					Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Favor de crear los correos de Logis con el numero de cliente 9929.")
-'				end if
-'JEMV>
-
-				SQL =	"insert into rep_mail (ID_MAIL, NOMBRE, MAIL, CLIENT_NUM, TERCERO, STATUS) " & _
-						" values  (seq_mail.nextval, '"& _
-						SQLEscape(Request.Form("nombre")) &"', '"& SQLEscape(Request.Form("correo")) & _
-						"', '" & NumCli & "', null,  1" & _
-						" )"
-			else
-'<JEMV
-'				if InStr(LCase(Request.Form("correo")), "@logis.com.mx") > 0 and Request.Form("cli_num") <> "9929" then
-'					Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Favor de crear los correos de Logis con el numero de cliente 9929.")
-'				end if
-'JEMV>
-
-				SQL =	"insert into rep_mail (ID_MAIL, NOMBRE, MAIL, CLIENT_NUM, TERCERO, STATUS) " & _
-						" values  (seq_mail.nextval, '"& _
-						SQLEscape(Request.Form("nombre")) &"', '"& SQLEscape(Request.Form("correo")) & _
-						"', '" & SQLescape(Request.Form("cli_num")) & "', null,  1" & _
-						" )"
-			end if
-	
-			msg = "Contacto incluido"
-			allOk = 1
-		end if
-		'CHG-DESA-30062021-01 ->
-		
-
-	rst.Open SQL, Connect(), 0, 1, 1
-
-	'<- CHG-DESA-30062021-01	
-	SQL = " select ID_MAIL,CLIENT_NUM from rep_mail where mail = '" & SQLEscape(Request.Form("correo")) & "' " & _
-					  " and CLIENT_NUM = '" & NumCli & "'"
-
-	arrayRS = GetArrayRS(SQL)
-	if IsArray(arrayRS) then
-		idMail = arrayRS(0,0)
-	end if
-	
-	SQL = " insert into rep_dest_mail (id_dest_mail, id_dest) " & _
-		  " values ('"& mail_ok &"','"& idMail &"' ) "
-
-	rst.Open SQL, Connect(), 0, 1, 1
-
-		if NumCli <> "" then
-			' Cerrar ventana actual y actualizar ventana ver_lista
-			dim urlVer
-
-			urlVer = SQLEscape(Request.Form("hdnURI"))& "&msg=El usuario " & SQLEscape(Request.Form("correo")) & " fue agregado correctamente."
-			Response.Redirect urlVer
-		else
-			Response.Redirect asp_self & "?msg=" & Server.URLEncode (msg)
-		end if
-	'CHG-DESA-30062021-01 ->
+''''		dim rst, msg, status
+''''	'<- CHG-DESA-30062021-01
+''''	dim allOk, cte
+''''	allOk = 0
+''''		
+''''	dim tercer
+''''	dim idMail
+''''	NumCli = SQLescape(Request.Form("hdn_cli_num"))
+''''	tercer = SQLescape(Request.Form("hdnTercero"))
+''''	cte = Request.QueryString("cliente")
+''''	'CHG-DESA-30062021-01 ->
+''''
+''''	set rst = Server.CreateObject("ADODB.Recordset")
+''''			
+''''		status = Request.Form("status") 
+''''		if status = "" then Status = 0
+''''		
+''''		SQL = "select 1 from eclient where cliclef='" & SQLescape(Request.Form("hdn_cli_num")) & "'"
+''''	
+''''		'<- CHG-DESA-30062021-01
+''''		Dim Id_Cron , mail_ok
+''''		Id_Cron =SQLescape(Request.Form("hdn_Id_Cron"))
+''''
+''''		SQL = " select MAIL_OK,ID_CRON from rep_detalle_reporte where ID_CRON = '" & SQLEscape(Id_Cron) & "' "
+''''
+''''		arrayRS = GetArrayRS(SQL)
+''''		if IsArray(arrayRS) then
+''''			mail_ok = arrayRS(0,0)
+''''		end if
+''''	
+''''		if NumCli <> "" then
+''''			SQL = "select 1 from eclient where cliclef='" & NumCli & "'"
+''''		else
+''''			if SQLescape(Request.Form("cli_num")) <> "" then
+''''				SQL = "select 1 from eclient where cliclef='" & Request.Form("cli_num") & "'"
+''''			end if
+''''		end if
+''''		arrayRS = GetArrayRS(SQL)
+''''		if not IsArray(arrayRS) then
+''''			if NumCli <> "" then
+''''				Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Este numero de cliente '" & NumCli & "' no existe.")
+''''			else
+''''				Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Este numero de cliente '" & SQLescape(Request.Form("cli_num")) & " no existe.")
+''''			end if	
+''''		end if
+''''				
+''''		if Request.Form("id_mail") <> "" then
+''''			if NumCli <> "" then
+''''				SQL = " update rep_mail set nombre= '" & SQLEscape(Request.Form("nombre")) &"', "& _
+''''					  " mail = '" & SQLEscape(Request.Form("correo")) & "', " & _
+''''					  " client_num = '" & NumCli & "', " & _
+''''					  " tercero = '" & SQLEscape(Request.Form("hdnTercero")) &"', " & _
+''''					  " status = '" & status &"' " & _
+''''					  " where id_mail= '" & SQLEscape(Request.Form("id_mail")) &"' "
+''''			else
+''''				SQL = " update rep_mail set nombre= '" & SQLEscape(Request.Form("nombre")) &"', "& _
+''''					  " mail = '" & SQLEscape(Request.Form("correo")) & "', " & _
+''''					  " client_num = '" & SQLescape(Request.Form("cli_num")) & "', " & _
+''''					  " tercero = '" & SQLEscape(Request.Form("hdnTercero")) &"', " & _
+''''					  " status = '" & status &"' " & _
+''''					  " where id_mail= '" & SQLEscape(Request.Form("id_mail")) &"' "
+''''			end if
+''''			msg = "Contacto Modificado"
+''''			allOk = 1
+''''		else
+''''			'verificacion que el correo es unico en la base
+''''			if NumCli <> "" then
+''''				SQL = " select 1 from rep_mail where mail = '" & SQLEscape(Request.Form("correo")) & "' " & _
+''''					  " and CLIENT_NUM = '" & NumCli & "'"
+''''			else
+''''				SQL = " select 1 from rep_mail where mail = '" & SQLEscape(Request.Form("correo")) & "' " & _
+''''						" and CLIENT_NUM = '" & SQLescape(Request.Form("cli_num")) & "'"
+''''			end if
+''''			arrayRS = GetArrayRS(SQL)
+''''
+''''			if  IsArray(arrayRS) then
+''''				Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Este correo ya existe para este cliente.")
+''''			end if
+''''			
+''''			'verificar que no se capturen correos de Logis para otro numero de cliente que el 9929
+''''		    if NumCli <> "" then
+'''''<JEMV
+'''''				if InStr(LCase(Request.Form("correo")), "@logis.com.mx") > 0 and NumCli <> "9929" then
+'''''					Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Favor de crear los correos de Logis con el numero de cliente 9929.")
+'''''				end if
+'''''JEMV>
+''''
+''''				SQL =	"insert into rep_mail (ID_MAIL, NOMBRE, MAIL, CLIENT_NUM, TERCERO, STATUS) " & _
+''''						" values  (seq_mail.nextval, '"& _
+''''						SQLEscape(Request.Form("nombre")) &"', '"& SQLEscape(Request.Form("correo")) & _
+''''						"', '" & NumCli & "', null,  1" & _
+''''						" )"
+''''			else
+'''''<JEMV
+'''''				if InStr(LCase(Request.Form("correo")), "@logis.com.mx") > 0 and Request.Form("cli_num") <> "9929" then
+'''''					Response.Redirect asp_self & "?msg=" & Server.URLEncode ("Favor de crear los correos de Logis con el numero de cliente 9929.")
+'''''				end if
+'''''JEMV>
+''''
+''''				SQL =	"insert into rep_mail (ID_MAIL, NOMBRE, MAIL, CLIENT_NUM, TERCERO, STATUS) " & _
+''''						" values  (seq_mail.nextval, '"& _
+''''						SQLEscape(Request.Form("nombre")) &"', '"& SQLEscape(Request.Form("correo")) & _
+''''						"', '" & SQLescape(Request.Form("cli_num")) & "', null,  1" & _
+''''						" )"
+''''			end if
+''''	
+''''			msg = "Contacto incluido"
+''''			allOk = 1
+''''		end if
+''''		'CHG-DESA-30062021-01 ->
+''''		
+''''
+''''	rst.Open SQL, Connect(), 0, 1, 1
+''''
+''''	'<- CHG-DESA-30062021-01	
+''''	SQL = " select ID_MAIL,CLIENT_NUM from rep_mail where mail = '" & SQLEscape(Request.Form("correo")) & "' " & _
+''''					  " and CLIENT_NUM = '" & NumCli & "'"
+''''
+''''	arrayRS = GetArrayRS(SQL)
+''''	if IsArray(arrayRS) then
+''''		idMail = arrayRS(0,0)
+''''	end if
+''''	
+''''	SQL = " insert into rep_dest_mail (id_dest_mail, id_dest) " & _
+''''		  " values ('"& mail_ok &"','"& idMail &"' ) "
+''''
+''''	rst.Open SQL, Connect(), 0, 1, 1
+''''
+''''		if NumCli <> "" then
+''''			' Cerrar ventana actual y actualizar ventana ver_lista
+''''			dim urlVer
+''''
+''''			urlVer = SQLEscape(Request.Form("hdnURI"))& "&msg=El usuario " & SQLEscape(Request.Form("correo")) & " fue agregado correctamente."
+''''			Response.Redirect urlVer
+''''		else
+''''			Response.Redirect asp_self & "?msg=" & Server.URLEncode (msg)
+''''		end if
+''''	'CHG-DESA-30062021-01 ->
 		
 case "2"
 		dim i, filtro
