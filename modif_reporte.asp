@@ -50,8 +50,8 @@ Select Case Request.Form("Etape")
 			<script src="js/main.js"></script>
 			<script language="JavaScript" src="./include/tigra_tables.js"></script>
 			<script type="text/javascript" src="js/reports.min.js"></script>
-			<script language="JavaScript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+			<script src="js/jquery-1.3.2.min.js"></script>
+			<script src="js/main.js"></script>
 
 			<script type="text/javascript">
                 var Type;
@@ -60,24 +60,24 @@ Select Case Request.Form("Etape")
                 var ContentType;
                 var DataType;
                 var ProcessData;
-				$(document).ready(
+                $(document).ready(
 
-					function () {
-						showLoading();
-						tmp_ws();						
+                    function () {
+                        showLoading();
+                        tmp_ws();
                     }
                 );
 
-				function tmp_ws() {
-					const xhr = new XMLHttpRequest('select_activos');
-					var status = document.getElementById('select_activos').value.trim();
+                function tmp_ws() {
+                    const xhr = new XMLHttpRequest('select_activos');
+                    var status = document.getElementById('select_activos').value.trim();
                     var usr = '<%=Session("array_user")(0,0)%>';
-                    const url = urlWebService + "GetConsultaReportes?usuario="+usr+"&status=" + status;
+                    const url = urlWebService + "GetConsultaReportes?usuario=" + usr + "&status=" + status;
                     var someHandler = "ok";
 
                     xhr.onreadystatechange = function () {
                         if (xhr.readyState == XMLHttpRequest.DONE) {
-							mostrarResultado(xhr.responseText);
+                            mostrarResultado(xhr.responseText);
 
                         }
 
@@ -102,10 +102,10 @@ Select Case Request.Form("Etape")
                         htmlTable = htmlTable + "		No hay reportes registrados.";
                         htmlTable = htmlTable + "	</td>";
                         htmlTable = htmlTable + "</tr>";
-					} else {
-                        
-						for (i = 0; i < arrayRS3.length; i++) {
-							htmlTable = "";						
+                    } else {
+
+                        for (i = 0; i < arrayRS3.length; i++) {
+                            htmlTable = "";
 
                             htmlTable = htmlTable + "<tr>";
                             // No.
@@ -114,39 +114,39 @@ Select Case Request.Form("Etape")
                             if (arrayRS3[i].NVL_ACTIVE == "0") {
                                 htmlTable = htmlTable + "<td><font color='red'>" + arrayRS3[i].NOMBRE + "</font></td>";
                             } else {
-                                htmlTable = htmlTable + "<td>" + arrayRS3[i].NOMBRE+"</td>";
-							}
+                                htmlTable = htmlTable + "<td>" + arrayRS3[i].NOMBRE + "</td>";
+                            }
                             //' Area Negocio
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].AREA_NEGOCIO + "</td>";
                             //' Prioridad
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].PRIORIDAD + "</td>";
                             //Tipo Reporte
-							htmlTable = htmlTable + "<td align'left'>" + arrayRS3[i].ID_REP + "</td>";
-							//Lista Correo -> Normal							
-                            htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE +"'); name='nVer'>Ver</a></td>";
+                            htmlTable = htmlTable + "<td align'left'>" + arrayRS3[i].ID_REP + "</td>";
+                            //Lista Correo -> Normal
+                            htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE + "'); name='nVer'>Ver</a></td>";
                             //Lista Correo -> modificar
-							htmlTable = htmlTable + '<td class="delC" style="font - size: 9.5px; "><a title="Modificar la lista de correos" href=javascript:modif_list(' + arrayRS3[i].MAIL_OK + "," + arrayRS3[i].CLIENTE+');>Mod._norm.</a></td>';
+                            htmlTable = htmlTable + '<td class="delC" style="font - size: 9.5px; "><a title="Modificar la lista de correos" href=javascript:modif_list(' + arrayRS3[i].MAIL_OK + "," + arrayRS3[i].CLIENTE + ',1' + ');>Mod._norm.</a></td>';
                             //error
-                            htmlTable = htmlTable + '<td class="delC" style="font-size: 9.5px; "><a title="Modificar la lista de correos en caso de error" href=javascript:modif_list(' + arrayRS3[i].MAIL_ERROR + "," + arrayRS3[i].CLIENTE +');>Mod._err</a></td>';
+                            htmlTable = htmlTable + '<td class="delC" style="font-size: 9.5px; "><a title="Modificar la lista de correos en caso de error" href=javascript:modif_list(' + arrayRS3[i].MAIL_ERROR + "," + arrayRS3[i].CLIENTE + ',2' + ');>Mod._err</a></td>';
                             //Cliente
-							htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].CLIENTE + " - " + arrayRS3[i].INIT_CAP + "</td>";                            
-							//htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON + "," + 0+');>Desactivar</a></td>';
+                            htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].CLIENTE + " - " + arrayRS3[i].INIT_CAP + "</td>";
+                            //htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON + "," + 0+');>Desactivar</a></td>';
 
-							//Frecuencia
-							htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].FRECUENCIA + " - " + arrayRS3[i].DESCRIPCION + "</td>";
-							//htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE + "'); name='nVer'>Ver</a></td>";
-							var tipo = 'mod';
-                            htmlTable = htmlTable + "<td align='center' class='delC'><a onclick=javascript:modif_reporte('" + arrayRS3[i].ID_CRON + "','" + tipo+"');>Modificar</a>_|_";
-							//Accion
-							
+                            //Frecuencia
+                            htmlTable = htmlTable + "<td align='left'>" + arrayRS3[i].FRECUENCIA + " - " + arrayRS3[i].DESCRIPCION + "</td>";
+                            //htmlTable = htmlTable + "<td class='delC' align='center'><a href=javascript:ver_lista('" + arrayRS3[i].MAIL_OK + "','" + arrayRS3[i].ID_CRON + "','" + arrayRS3[i].CLIENTE + "'); name='nVer'>Ver</a></td>";
+                            var tipo = 'mod';
+                            htmlTable = htmlTable + "<td align='center' class='delC'><a onclick=javascript:modif_reporte('" + arrayRS3[i].ID_CRON + "','" + tipo + "');>Modificar</a>_|_";
+                            //Accion
 
-							if (arrayRS3[i].NVL_ACTIVE == "1") {
-								//Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'desactivar');"">Desactivar</a></td>" & vbCrLf
-                                htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON + "," + 0+');>Desactivar</a></td>';
-							} else {
-								//Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'desactivar');"">Desactivar</a></td>" & vbCrLf
-                                htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON +","+ 1 + ');>Activar</a></td>';
-							}
+
+                            if (arrayRS3[i].NVL_ACTIVE == "1") {
+                                //Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'desactivar');"">Desactivar</a></td>" & vbCrLf
+                                htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON + "," + 0 + ');>Desactivar</a></td>';
+                            } else {
+                                //Response.Write "<a href=""javascript:modif_reporte("& arrayRS(0,i) &", 'desactivar');"">Desactivar</a></td>" & vbCrLf
+                                htmlTable = htmlTable + '<a onclick=javascript:agregarmod(' + arrayRS3[i].ID_CRON + "," + 1 + ');>Activar</a></td>';
+                            }
 
                             //Dias en el servidor
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].DIAS_SERVIDOR + "</td>";
@@ -164,33 +164,33 @@ Select Case Request.Form("Etape")
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].HORA + "</td>";
                             //Minuto(s)
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].MINUTO + "</td>";
-							//Usuario creacion
-							if (arrayRS3[i].USR_CREACION == null) {
+                            //Usuario creacion
+                            if (arrayRS3[i].USR_CREACION == null) {
                                 htmlTable = htmlTable + "<td></td>";
-							} else {
+                            } else {
                                 htmlTable = htmlTable + "<td>" + arrayRS3[i].USR_CREACION + "</td>";
-							}
-                            
+                            }
+
                             //Fecha creacion
-							if (arrayRS3[i].CREACION == null) {
+                            if (arrayRS3[i].CREACION == null) {
                                 htmlTable = htmlTable + "<td></td>";
-							} else {
+                            } else {
                                 htmlTable = htmlTable + "<td>" + arrayRS3[i].CREACION + "</td>";
-							}
-                            
+                            }
+
                             //Usuario modificacion
                             if (arrayRS3[i].USUARIO == null) {
                                 htmlTable = htmlTable + "<td></td>";
-							} else {
+                            } else {
                                 htmlTable = htmlTable + "<td>" + arrayRS3[i].USUARIO + "</td>";
-							}
+                            }
                             //Fecha modificacion
-							if (arrayRS3[i].MODIFICACION == null) {
+                            if (arrayRS3[i].MODIFICACION == null) {
                                 htmlTable = htmlTable + "<td></td>";
-							} else {
+                            } else {
                                 htmlTable = htmlTable + "<td>" + arrayRS3[i].MODIFICACION + "</td>";
-							}
-                            
+                            }
+
                             //Param_1
                             if (arrayRS3[i].PARAM_1 == undefined) {
                                 htmlTable = htmlTable + "<td></td>";
@@ -238,14 +238,14 @@ Select Case Request.Form("Etape")
                             //Command
                             htmlTable = htmlTable + "<td>" + arrayRS3[i].COMMAND.trim() + "</td>"
 
-							htmlTable = htmlTable + "</tr>"
+                            htmlTable = htmlTable + "</tr>"
                             $("#tbResult").append(htmlTable);
-						}
-					}
+                        }
+                    }
                     hideLoading();
-				}
+                }
 
-                
+
 
             </script>
 
@@ -255,7 +255,7 @@ Select Case Request.Form("Etape")
 			
 			<script type="text/javascript">
 
-				function FilterTableBy2Params() {
+                function FilterTableBy2Params() {
 
                     var input = document.getElementById("table-buscar");
                     var combo = document.getElementById("select_activos");
@@ -268,7 +268,7 @@ Select Case Request.Form("Etape")
                     var bgColor = 0;
 
                     try {
-                        
+
                         tr = table.getElementsByClassName("f");
                         if (filterTxt != "" && filterCmb != "") {
                             filterType = 1;
@@ -502,7 +502,7 @@ Select Case Request.Form("Etape")
 			<!-- CHG-DESA-30062021-01 ->  -->
 		</thead>
 		<tbody id="tbResult">
-			
+
 		</tbody>
 		
 		<%
@@ -629,33 +629,33 @@ Select Case Request.Form("Etape")
 		%>
 		<script language="javascript">
             //<!--
-			function agregarmod(id_rep, accion) {
-				var texto;
+            function agregarmod(id_rep, accion) {
+                var texto;
                 if (accion == 1) {
-					texto = "Activar";
+                    texto = "Activar";
                 } else {
-					texto = "Desactivar";
+                    texto = "Desactivar";
                 }
                 if (confirm('¿ Esta seguro de ' + texto + ' el reporte no. ' + id_rep + ' ?') == true) {
-						const xhr = new XMLHttpRequest('select_activos');
+                    const xhr = new XMLHttpRequest('select_activos');
                     const url = urlWebService + "GetStatusReporte?idreporte=" + id_rep + "&accion=" + accion;
-						
-						var someHandler = "ok";
 
-						xhr.onreadystatechange = function () {
-							if (xhr.readyState == XMLHttpRequest.DONE) {
-								if (accion == 1) {
-                                    location.href = ('/menu.asp?msg=' + "Reporte Activado.");
-								} else {
-                                    location.href = ('/menu.asp?msg=' + "Reporte Desactivado.");
-								}
-								
+                    var someHandler = "ok";
 
-							}
-						}
-						xhr.open("GET", url, true);
-						xhr.send();
-				}
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == XMLHttpRequest.DONE) {
+                            if (accion == 1) {
+                                location.href = ('/menu.asp?msg=' + "Reporte Activado.");
+                            } else {
+                                location.href = ('/menu.asp?msg=' + "Reporte Desactivado.");
+                            }
+
+
+                        }
+                    }
+                    xhr.open("GET", url, true);
+                    xhr.send();
+                }
             }
 
 
@@ -674,15 +674,16 @@ Select Case Request.Form("Etape")
                 }
             }
 
-            function modif_list(id_list, id_client) {
+            function modif_list(id_list, id_client, accion) {
                 document.modif_list.mail_list.value = id_list;
                 document.modif_list.id_client.value = id_client;
+                document.modif_list.id_accion.value = accion;
                 document.modif_list.submit();
             }
 
             //<- CHG-DESA-30062021-01
             function ver_lista(lista, Num, Cli) {
-				localStorage.setItem('Cli', Cli);                
+                localStorage.setItem('Cli', Cli);
                 localStorage.setItem('sURI_list', "ver_lista.asp?liste=" + lista + "&Num=" + Num);
                 localStorage.setItem('Id_Cron', Num);
                 localStorage.setItem('pop', 1);
@@ -699,6 +700,7 @@ Select Case Request.Form("Etape")
 		<form name="modif_list" action="mail_modif.asp" method="post">
 			<input type="hidden" name="mail_list" value="" />
 			<input type="hidden" name="id_client" value="" />
+			<input type="hidden" id="id_accion" name="id_accion" value="0" />
 		</form>
 		<script language="JavaScript">
             tigra_tables('select_reporte', 4, 0, '#ffffff', '#ffffcc', '#ffcc66', '#cccccc');
@@ -742,38 +744,38 @@ Select Case Request.Form("Etape")
 		</script>
 <%
 case "1"
-		SQL = " select repdet.ID_CRON, repdet.NAME, rep.ID_REP, rep.name, repdet.CLIENTE, InitCap(cli.clinom)  " & VbCrLf 
-		SQL = SQL & "  , repdet.CARPETA, repdet.FILE_NAME, repdet.LAST_CREATED, repdet.MAIL_OK, repdet.MAIL_ERROR " & VbCrLf 
-		SQL = SQL & "  , repdet.FRECUENCIA, tipo.DESCRIPCION, cron.HEURES, cron.MINUTES, cron.JOURS " & vbCrLf 
-		SQL = SQL & "  , cron.MOIS, cron.JOUR_SEMAINE, cron.PRIORITE, nvl(rep.subcarpeta,' '), rep.TEMP_MENSAJE_FECHA " & VbCrLf 
-		SQL = SQL & "  , rep.TEMP_MENSAJE, rep.NUM_OF_PARAM, decode(repdet.confirmacion, '1', 'checked') " & VbCrLf 
-		SQL = SQL & "  , repdet.days_deleted " & VbCrLf 
-		SQL = SQL & " from rep_detalle_reporte repdet  " & VbCrLf 
-		SQL = SQL & "  , rep_reporte rep  " & VbCrLf 
-		SQL = SQL & "  , rep_chron cron  " & VbCrLf 
-		SQL = SQL & "  , REP_TIPO_FRECUENCIA tipo  " & VbCrLf 
-		SQL = SQL & "  , eclient cli  " & VbCrLf 
-		SQL = SQL & " where rep.ID_REP = repdet.id_rep  " & VbCrLf 
-		SQL = SQL & "  and cron.ID_RAPPORT = repdet.id_cron   " & VbCrLf 
-		SQL = SQL & "  and tipo.ID_TIPO_FREC = repdet.FRECUENCIA  " & VbCrLf 
-		SQL = SQL & "  and cli.cliclef = repdet.cliente  " & VbCrLf 
-		SQL = SQL & "  and repdet.ID_CRON = " & SQLEscape(Request.Form("id_reporte"))
+		'SQL = " select repdet.ID_CRON, repdet.NAME, rep.ID_REP, rep.name, repdet.CLIENTE, InitCap(cli.clinom)  " & VbCrLf 
+		'SQL = SQL & "  , repdet.CARPETA, repdet.FILE_NAME, repdet.LAST_CREATED, repdet.MAIL_OK, repdet.MAIL_ERROR " & VbCrLf 
+		'SQL = SQL & "  , repdet.FRECUENCIA, tipo.DESCRIPCION, cron.HEURES, cron.MINUTES, cron.JOURS " & vbCrLf 
+		'SQL = SQL & "  , cron.MOIS, cron.JOUR_SEMAINE, cron.PRIORITE, nvl(rep.subcarpeta,' '), rep.TEMP_MENSAJE_FECHA " & VbCrLf 
+		'SQL = SQL & "  , rep.TEMP_MENSAJE, rep.NUM_OF_PARAM, decode(repdet.confirmacion, '1', 'checked') " & VbCrLf 
+		'SQL = SQL & "  , repdet.days_deleted " & VbCrLf 
+		'SQL = SQL & " from rep_detalle_reporte repdet  " & VbCrLf 
+		'SQL = SQL & "  , rep_reporte rep  " & VbCrLf 
+		'SQL = SQL & "  , rep_chron cron  " & VbCrLf 
+		'SQL = SQL & "  , REP_TIPO_FRECUENCIA tipo  " & VbCrLf 
+		'SQL = SQL & "  , eclient cli  " & VbCrLf 
+		'SQL = SQL & " where rep.ID_REP = repdet.id_rep  " & VbCrLf 
+		'SQL = SQL & "  and cron.ID_RAPPORT = repdet.id_cron   " & VbCrLf 
+		'SQL = SQL & "  and tipo.ID_TIPO_FREC = repdet.FRECUENCIA  " & VbCrLf 
+		'SQL = SQL & "  and cli.cliclef = repdet.cliente  " & VbCrLf 
+		'SQL = SQL & "  and repdet.ID_CRON = " & SQLEscape(Request.Form("id_reporte"))
 	' <- CHG-DESA-30062021-01
-		for i=0 to UBound(arr1)
-			if Session("array_user")(0,0) = arr1(i) then
-				SQL = SQL + " and rep.id_rep in (14,173,24) "
-				exit for
-			end if
-		next
+		'for i=0 to UBound(arr1)
+		'	if Session("array_user")(0,0) = arr1(i) then
+		'		SQL = SQL + " and rep.id_rep in (14,173,24) "
+		'		exit for
+		'	end if
+		'next
 
-		for i=0 to UBound(arr2)
-			if Session("array_user")(0,0) = arr2(i) then
-				SQL = SQL + " and rep.id_rep = 174 "
-				exit for
-			end if
-		next
+		'for i=0 to UBound(arr2)
+		'	if Session("array_user")(0,0) = arr2(i) then
+		'		SQL = SQL + " and rep.id_rep = 174 "
+		'		exit for
+		'	end if
+		'next
 ' CHG-DESA-30062021-01 ->
-		arrayRS = GetArrayRS(SQL)
+		'arrayRS = GetArrayRS(SQL)
 '		Response.Write replace(SQL, vbcrlf, "<br />")
 '		Response.End 
 		if not IsArray(arrayRS) then
@@ -791,11 +793,11 @@ case "1"
 				<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
 				<script type="text/javascript" src="js/jquery.validate.min.js"></script>
 				<script type="text/javascript">
-					$(document).ready(function () {
+                    $(document).ready(function () {
                         $("#modif_rep").validate();
                         jQuery.extend(jQuery.validator.messages, {
                             required: "Campo obligatorio."
-						});
+                        });
                         tmp_ws(status);
                     });
                 </script>
@@ -1166,7 +1168,7 @@ case "1"
                                     }
                                     if (error == "") { return 0; }
                                     else { return error; }
-								}
+                                }
                             </script>
 						</table>
 					</form>
