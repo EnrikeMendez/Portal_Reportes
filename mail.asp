@@ -23,7 +23,7 @@ Select Case Request("Etape")
 			<script src="js/jquery-1.3.2.min.js"></script>
 			<script src="js/main.js"></script>
 
-			<script type="text/javascript"> 
+			<!--<script type="text/javascript"> 
                 var Type;
                 var Url;
                 var Data;
@@ -77,7 +77,7 @@ Select Case Request("Etape")
                     }
                     //hideLoading();
                 }
-            </script>
+            </script>-->
 			
 			<script>
 				//<- CHG-DESA-30062021-01
@@ -162,6 +162,8 @@ Select Case Request("Etape")
 			if not Request.QueryString("Num") is nothing then
 				if Request.QueryString("Num") <> "" then
 					cliente = SQLescape(Request.QueryString("Num"))
+			response.write cliente
+			response.End
 					Session("cli_num") = cliente
 '< JEMV
 					'Response.write("<script>function lockFields() { document.getElementById('cli_num').disabled = true; document.getElementById('chkStatus').disabled = true; document.getElementById('chkTercero').disabled = true; }</script>")
@@ -221,10 +223,9 @@ end if
 				<hr/>
 				
 				<table border="0" width="350" class="tblMenu">
-					<!--<<MRG-->
-					<!--<tbody>-->
-					<tbody id="tbmsg">
-						<!--<%if Request("msg") <> "" then	Response.Write "<tr><td align=center colspan=2><font color=red size=2>" & Request("msg") & "</font></td></tr>" %>-->
+					
+					<tbody>
+						<%if Request("msg") <> "" then	Response.Write "<tr><td align=center colspan=2><font color=red size=2>" & Request("msg") & "</font></td></tr>" %>
 					</tbody>
 				</table>			
 		<script LANGUAGE="JavaScript">
@@ -263,7 +264,9 @@ end if
                     tmp_ws2()
                 //document.mail_form.submit();
             }
-            function tmp_ws2() {
+			function tmp_ws2() {
+				var cte = '<%= Request.QueryString("cliente") %>';
+				alert(cte);
                 var NumCli = "";
                 var Tercero = false;
                 var id_mail
@@ -277,15 +280,11 @@ end if
                     NumCli = document.getElementById("cli_num").value;
                 }
                 Tercero = document.getElementById("hdnTercero").value;
-                //alert(document.getElementById("hdnTercero").value);
                 id_mail = document.getElementById("id_mail").value;
                 nombre = document.getElementById("txtNombre").value;
-               // alert(document.getElementById("txtNombre").value)
                 correo = document.getElementById("txtCorreo").value;
-
-                status = document.getElementById("chkStatus").value;
-
-                hdnURI = document.getElementById("hdnURI").value;
+				status = document.getElementById("chkStatus").value;
+				hdnURI = document.getElementById("hdnURI").value;
 
                 const xhr = new XMLHttpRequest();
                 const url = urlWebService + "GetMail?Id_Cron=" + $("#hdn_Id_Cron").val() + "&NumCli=" + NumCli + "&id_mail=" + id_mail + "&nombre=" + nombre + "&correo=" + correo + "&Tercero=" + Tercero + "&status=" + status + "&hdnURI=" + hdnURI + ")";
@@ -303,18 +302,7 @@ end if
             function mostrarResultado2(wsResponseText) {
                 var objResult = JSON.parse(wsResponseText);
                 var info = objResult.GetMailResult;
-                //var arrayRS3 = JSON.parse(info);
-                //document.mail_form.submit();
-                var htmlTable = "";
-                $("#tbmsg").empty;
-                htmlTable = htmlTable + "<tr>";
-                htmlTable = htmlTable + "	<td align='center' colspan='2'>";
-                htmlTable = htmlTable + "		<font color = 'red' size = '2' > ";
-                htmlTable = htmlTable + info;
-                htmlTable = htmlTable + "		</font>";
-                htmlTable = htmlTable + "	</td>";
-                htmlTable = htmlTable + "</tr>";
-                $("#tbmsg").append(htmlTable);
+                window.location.href = "mail.asp?msg=" + info;
             }
 
         </script>
@@ -342,7 +330,7 @@ end if
 						<td class="tdLabel">
 							Direccion de correo :<br>
 						</td>
-						<td class="tdField">
+						<td class="tdField" id="mail">
 							<input type=text name=correo size=25 value="<%=correo%>" id="txtCorreo" onchange="ValidaCorreo();" class="required">
 							<input type="hidden" id="hdnURI" name="hdnURI" value="<%= Request.QueryString("hdnURI") %>" />
 						</td>
@@ -396,6 +384,8 @@ case "1"
 ''''		dim rst, msg, status
 ''''	'<- CHG-DESA-30062021-01
 ''''	dim allOk, cte
+		response.write cliente
+			response.End
 ''''	allOk = 0
 ''''		
 ''''	dim tercer
