@@ -7,22 +7,7 @@
 'modificacion de reportes
 	Response.Expires = 0
 	call check_session()
-	dim SQL, arrayRS, SQL_02, arrayRS2, i, rst, arrayRS3, log_prioridad_dinamica, j
-	set rst = Server.CreateObject("ADODB.Recordset")
 
-Function NVL(str)
-	if IsNull(str) then
-		NVL = "" 
-	else 
-		NVL = str
-	end if
-End Function
-
-	'if Request("reporte[]") <> "" then	
-	'	SQL = "update rep_chron set priorite = " & Request("select_prioridad") & " where id_chron in (" & Request("reporte[]") & ")"
-	'	rst.Open SQL, Connect(), 0, 1, 1
-	'	Response.Write  "<br>Se cambio a prioridad " & Request("select_prioridad") & " los id_chron " & Request("reporte[]") & " de la tabla rep_cron."
-	'end if
 %>
 <!DOCTYPE html>
 <html>
@@ -80,20 +65,9 @@ End Function
         </div>
     </div>
 
-    <%
-	
-			'< ---CHG-DESA-27042022-01
-			'invoca el seteo dinamico de prioridad
-			call sub_procesos_prioridad_dinamica()
-			' CHG-DESA-27042022-01-- >
 
-			if not IsArray(arrayRS) then
-				Response.Write "<script>MinutosRecargarPagina = totLabel;</script>"
-			end if
 
-    %>
-
-    <form action="cambio_prioridad.asp" method="post">
+    <form action="" method="">
         <center>
             <table width="98%" border="0" class="tbl-shadow">
                 <tr>
@@ -239,7 +213,7 @@ End Function
         //< !--ORP: WS AJAX-- >
         function ftn_GetConsultaCambioPrioridad() {
             const xhr = new XMLHttpRequest();
-            //const url = "http://localhost:51687/Report_Service.svc/GetConsultaCambioPrioridad";
+            //const url = "http://localhost:50899/Report_Service.svc/GetConsultaCambioPrioridad";
             const url = urlWebService + "GetConsultaCambioPrioridad";
 
             xhr.onreadystatechange = function () {
@@ -259,7 +233,8 @@ End Function
             var prioridad = 0;
 
             prioridad = document.getElementById("select_prioridad").value;
-            id_crons = document.getElementById("reporte[]").value;
+            //id_crons = document.getElementById("reporte[]").value;
+            id_crons = document.getElementById("arr").value;
 
             if (id_crons != "") {
                 //const url = "http://localhost:51687/Report_Service.svc/GetModificaCambioPrioridad?id_crons = "+ id_crons +" ";
@@ -304,11 +279,11 @@ End Function
 
                 for (i = 0; i < arrayData.length; i++) {
 
-                    htmlTable = "";
+                    //htmlTable = "";
 
                     htmlTable = htmlTable + "<tr>";
 
-                    htmlTable = htmlTable + " <td align='center'><input type='checkbox' name='reporte[]' id='reporte[]' value='" + arrayData[i].ID_CHRON + "'></td> \n\n"
+                    htmlTable = htmlTable + " <td align='center'><input type='checkbox' name='reporte[]' id='reporte[]' value='" + arrayData[i].ID_CRON + "'></td> \n\n"
 
 
                     htmlTable = htmlTable + "<td align='center'>";
@@ -356,76 +331,28 @@ End Function
         $(document).ready(ftn_GetConsultaCambioPrioridad);
 
         function ftn_modifica_cambio_prioridad(wsResponseText) {
-
             var objResult = JSON.parse(wsResponseText);
             var info = objResult.GetConsultaCambioPrioridadResult;
             alert(info);
         }
-
             //< !--ORP: WS AJAX-- >
+
+
+
+        //function select_check_reporte() {
+        //    $('[name="reporte[]"]').click(function () {
+        //        var arr = $('[name="reporte[]"]:checked').map(function () {
+        //            return this.value;
+        //        }).get();
+        //        var str = arr.join(',');
+        //        $('#arr').text(JSON.stringify(arr));
+        //        $('#str').text(str);
+        //        <input type="hidden" name="arr" id="arr" value="arr" />
+        //    });
+        //}
 
 
 
     </script>
 </body>
-
-<%
-		'< ---CHG-DESA-27042022-01
-		'----------------------------'Setear la prioridad de los procesos dinamicamente:----------------------------
-			Sub sub_procesos_prioridad_dinamica()
-				dim bandera,SQL2,arrayRS2
-				    bandera = 0
-
-    	    SQL2 = " select reporte.id_rep,  chron.priorite, rep_det.id_cron, chron.id_chron " & VbCrLf  
-			SQL2 = SQL2 & " from rep_detalle_reporte rep_det  " & VbCrLf 
-			SQL2 = SQL2 & " join REP_CHRON chron on chron.id_rapport = rep_det.id_cron " & VbCrLf  
-            SQL2 = SQL2 & " join rep_reporte reporte on reporte.id_rep = rep_det.id_rep  " & VbCrLf 
-            SQL2 = SQL2 & " where chron.active = 1  " & VbCrLf 
-			SQL2 = SQL2 & " and chron.MINUTES is null and chron.HEURES is null and chron.JOURS is null and chron.MOIS is null and chron.JOUR_SEMAINE is null and chron.LAST_EXECUTION is null  " & VbCrLf 
-            SQL2 = SQL2 & " order by chron.priorite, id_cron desc "
-            arrayRS2 = GetArrayRS(SQL2)
-
-				if not IsArray(arrayRS2) then
-					'Response.Write "Prioridad dinamica en espera ..."
-					Response.Write "<script>console.log('Prioridad dinamica en espera ...')</script>"
-				else
-					'Response.Write "Reportes modificados de prioridad dinamicamente: "
-					Response.Write "<script>console.log('Reportes modificados de prioridad dinamicamente:')</script>"
-				dim arrTmp
-				arrTmp = CatalogoPrioridadDinamica()
-				if IsArray(arrTmp) then
-				For i=0 to UBound(arrayRS2,2)
-				     for j=0 to UBound(arrTmp,2)
-				     	if CStr(arrayRS2(0,i)) = CStr(arrTmp(0,j)) Then
-				     		if CStr(arrayRS2(1,i)) <> CStr(arrTmp(1,j)) Then
-                                  call sub_set_prioridad(CStr(arrayRS2(0,i)),CStr(arrTmp(1,j)),CStr(arrayRS2(2,i))) 
-				     			  bandera = 1
-                            else
-                                  Response.Write "<script>console.log('OK: "& CStr(arrayRS2(0,i)) & " " & CStr(arrayRS2(2,i)) & " " & CStr(arrTmp(1,j)) &"')</script>"
-                                  bandera = 1
-					end if
-				     	end if	
-				     next  
-				Next
-				end if
-				if bandera = 0 Then
-				  	'Response.Write " Ninguno de la lista actual." 
-					Response.Write "<script>console.log(' Ninguno de la lista actual.')</script>"
-				end if
-				end if				
-			End Sub
-			Sub	sub_set_prioridad(id_rep, prioridad, id_chron)
-				SQL ="update rep_chron set priorite = "& prioridad &" where ID_CHRON IN (select ID_CHRON  from  rep_chron chron" & VbCrLf 
-				SQL = SQL & "JOIN rep_detalle_reporte rep_detalle on chron.id_rapport = rep_detalle.id_cron   " & VbCrLf
-				SQL = SQL & "JOIN rep_reporte rep on rep.ID_REP = rep_detalle.id_rep " & VbCrLf
-				SQL = SQL & "where chron.active = 1" & VbCrLf
-				SQL = SQL & "and chron.MINUTES is null and chron.HEURES is null and chron.JOURS is null and chron.MOIS is null and chron.JOUR_SEMAINE is null and chron.LAST_EXECUTION is null " & VbCrLf 
-				SQL = SQL & "and rep_detalle.id_rep  = "& id_rep &" )" & VbCrLf
-				rst.Open SQL, Connect(), 0, 1, 1
-				'Response.Write  "("& id_rep & ") " & id_chron & " -" & "- > " & prioridad & "|" 
-				Response.Write "<script>console.log('CHANGED: "& id_rep & " " & id_chron & " " & prioridad &"')</script>"
-			End Sub
-		'-----------------------------------------------------------------------------------------------------------
-		' CHG-DESA-27042022-01-- >
-%>
 </html>
