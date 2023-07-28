@@ -10,13 +10,13 @@ dim qa
 
 
 ' <JEMV: ESTO PERMITE EL ACCESO LOCAL, descomentar antes de liberar el módulo:
-if qa = "" then
-	if Left(Request.ServerVariables("REMOTE_ADDR"),7) <> "192.168" then
-		'avoid external acceses 
-			Response.Write "<center class=error><H1>Access Prohibited</h1></center>"
-			Response.End 
-		end if
-end if
+'if qa = "" then
+'	if Left(Request.ServerVariables("REMOTE_ADDR"),7) <> "192.168" then
+'		'avoid external acceses 
+'			Response.Write "<center class=error><H1>Access Prohibited</h1></center>"
+'			Response.End 
+'		end if
+'end if
 ' JEMV>
 
 'call check_session()
@@ -31,34 +31,44 @@ Select Case Request.Form("Etape")
 <html>
 <head>
     <title>Seleccion del reporte</title>
+
+    <!--ORP: WS AJAX-->
+    <script src="js/jquery-1.3.2.min.js"></script>
+    <script src="js/main.js"></script>
+    <!--ORP: WS AJAX-->
+
 </head>
 <body>
     <%
 		call print_style()
 		
     %>
+
+
+
+
     <style>
-    	td {
-    		font-size: 10px;
-    		line-height: 2em;
-    	}
+        td {
+            font-size: 10px;
+            line-height: 2em;
+        }
 
-    	.lblMSG {
-    		align-content: center;
-    		font-size: 11.5px;
-    		padding: 10px;
-    		text-align: center;
-    		width: 100%;
-    	}
+        .lblMSG {
+            align-content: center;
+            font-size: 11.5px;
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+        }
 
-    	.green {
-    		border: solid 1px #DDF0DD;
-    		background-color: #EBFFEB;
-    	}
+        .green {
+            border: solid 1px #DDF0DD;
+            background-color: #EBFFEB;
+        }
     </style>
     <%if Request("msg") <> "" then	Response.Write "<table width='900px'><tr><td align='center'><font class='lblMSG green' size='2'>" & Request("msg") & "</font></td></tr></table><br/>"%>
-    <table width="1200" border="0">
-        <form name="valid_conf" action="<%=asp_self()%>" method="post">
+    <form name="valid_conf" action="<%=asp_self()%>" method="post">
+        <table width="1200" border="0">
             <tr bgcolor="goldenrod">
                 <th colspan="4">Seleciona un reporte :</th>
             </tr>
@@ -71,69 +81,28 @@ Select Case Request.Form("Etape")
                 <th>Aduana-Trading</th>
             </tr>
             <tr valign="top">
-                <td>
-                    <%
-				'Reportes Aduana 
-				dim tab_tmp, cons
-				cons = 1
-				SQL = " select rep.id_rep, rep.name, rep.num_of_param " & _
-					  " from rep_reporte rep" & _
-					  " where id_rep in (74,59,182,143,104 ,81,24,23,22,21,20,17,13,187,189,192,193,194,198,216,219,220,223,224,225,229,134,230,232,239,241,245,246,255,258,225,238,267,272,274,273,275,277,205,210,231,269,296,162,298) order by name "
-				arrayRS = GetArrayRS(SQL)
-				
-				for i=0 to UBound(arrayRS,2)
-					Response.Write "<input type=radio name=id_rep value="&arrayRS(0,i)&">&nbsp;" & cons & ". " & arrayRS(1,i) & "<br>" & vbCrLf  & vbTab 
-				    cons = cons + 1
-				next
-				
-                    %>
-                </td>
-                <td>
-                    <%
-'< JEMV: Agrego el ID 334 (Reservacion de Guias CD)
-				'Reportes Trading parte 1
-				SQL = " select rep.id_rep, rep.name, rep.num_of_param, 1 " & _
-					  " from rep_reporte rep" & _
-				  " where id_rep in (172,170,169,159,158,157,155,153,151,150,149,147,139,176," & _
-				  " 138,137,121,112,110,100,99,98,96,94,89,82,43,42,37,171,191,80,197,213,218,222, " & _ 
-				  " 226,234,235,237,249,256,250,251,259,261,262,266,271,175,265,303,304) " & _
-				  " union all " & _
-				  " select rep.id_rep, rep.name, rep.num_of_param, 2 " & _
-					  " from rep_reporte rep" & _
-				  " where id_rep in (320) " & _
-				  " order by 4, 2 "
-' JEMV >
-					  
-				arrayRS = GetArrayRS(SQL)
-				cons = 1
-				for i=0 to UBound(arrayRS,2)
-					Response.Write "<input type=radio name=id_rep value="&arrayRS(0,i)&">&nbsp;" & cons & ". " & arrayRS(1,i) & "<br>" & vbCrLf  & vbTab 
-				    cons = cons + 1
-				    if i = CInt(UBound(arrayRS,2) / 2) then
-				       Response.Write " </td><td>"
-				    end if
-				next
-				Response.Write "<input type=radio name=id_rep value='talones'>&nbsp;Talones con seguro<br>"
-                    %>
-                </td>
-                <td>
-                    <%
-				'Reportes Aduana-Trading
-				SQL = " select rep.id_rep, rep.name, rep.num_of_param " & _
-					  " from rep_reporte rep" & _
-					  " where id_rep in (174) order by  name "
-					  
-				arrayRS = GetArrayRS(SQL)
-				cons = 1
-				for i=0 to UBound(arrayRS,2)
-					Response.Write "<input type=radio name=id_rep value="&arrayRS(0,i)&" >&nbsp;" & cons & ". " & arrayRS(1,i) & "<br>" & vbCrLf  & vbTab 
-				    cons = cons + 1
-				next
-				
-                    %>
-                </td>
+
+                <!--ORP: WS AJAX-->
+                <td id="print_data_sec1"></td>
+                <!--ORP: WS AJAX-->
+
+
+                <!--ORP: WS AJAX-->
+                <td id="print_data_sec2"></td>
+                <!--ORP: WS AJAX-->
+
+
+                <!--ORP: WS AJAX-->
+                <td id='print_data_sec2_1'></td>
+                <!--ORP: WS AJAX-->
+
+
+                <!--ORP: WS AJAX-->
+                <td id='print_data_sec3'></td>
+                <!--ORP: WS AJAX-->
+
+
             </tr>
-            <tr>
 
             <tr>
                 <td align="left" colspan="6">
@@ -144,15 +113,21 @@ Select Case Request.Form("Etape")
                     <br>
                     <input type="hidden" name="etape" value="1">
                     <input type="hidden" name="test" value="1">
-                    <input type="submit" class="buttonsOrange"><br>
+
+                    <!--ORP: WS AJAX-->
+                    <!-- <input type="submit" class="buttonsOrange"><br> -->
+                    <input type="submit" class="buttonsOrange" onclick ="ftn_GetConsultaParametrosProcesosAdemanada()"><br>
+                    <!--ORP: WS AJAX-->
+
                     <br>
                 </td>
             </tr>
+        </table>
+    </form>
 
-        </form>
-    </table>
     <%
 	Case "1"
+
 	if Request.Form("id_rep") = "talones" then
 		Response.Redirect "talones_seguro.asp"
 	end if
@@ -164,12 +139,19 @@ Select Case Request.Form("Etape")
         <link media="screen" href="include/dyncalendar.css" type="text/css" rel="stylesheet">
         <script src="include/browserSniffer.js" type="text/javascript" language="javascript"></script>
         <script src="include/dyncalendar.js" type="text/javascript" language="javascript"></script>
+
+            <!--ORP: WS AJAX-->
+            <script src="js/jquery-1.3.2.min.js"></script>
+            <script src="js/main.js"></script>
+            <!--ORP: WS AJAX-->
+
     </head>
     <body>
         <%call print_style()%>
         <%if Request("msg") <> "" then	Response.Write "<table width='600px'><tr><td align='center' colspan='2'><font class='lblMSG' size='2'>" & Request("msg") & "</font></td></tr></table><br/>"%>
-        <table width="600" border="0">
-            <form name="valid_conf" action="<%=asp_self()%>" method="post">
+
+        <form name="valid_conf" action="<%=asp_self()%>" method="post">
+            <table width="600" border="0">
                 <tr bgcolor="goldenrod">
                     <th colspan="2">Captura los parametros : </th>
                 </tr>
@@ -178,8 +160,10 @@ Select Case Request.Form("Etape")
 	SQL = " select num_of_param " & _
 		  " from rep_reporte " & _
 		  " where id_rep='"& Request.Form("id_rep") &"' " 
-'		response.write SQL
-'		response.End
+		
+       'response.write SQL
+       'response.End
+
 	arrayRS = GetArrayRS(SQL)
 	'Response.Write arrayRS(0,0)
 	dim num_param
@@ -381,6 +365,8 @@ Select Case Request.Form("Etape")
 		</td>
 	</tr>-->
                 <script language="javascript">
+
+
                     function CheckDate(d) {
                         // Cette fonction vérifie le format JJ/MM/AAAA saisi et la validité de la date.
                         // Le séparateur est défini dans la variable separateur
@@ -530,6 +516,7 @@ Select Case Request.Form("Etape")
                         }
                         expr.value = new_name;
                     }
+
                 </script>
                 <tr>
                     <td colspan="2">
@@ -550,10 +537,10 @@ Select Case Request.Form("Etape")
                         <br>
                     </td>
                 </tr>
+                <br>
+            </table>
+        </form>
 
-            </form>
-            <br>
-        </table>
         <%	
 	case "2"
         %>
@@ -901,9 +888,149 @@ Select Case Request.Form("Etape")
 		
 
 end select
-            %>
-        </body>
 
+            %>
+
+            <script language="javascript">
+                //< !--ORP: WS AJAX-- >
+
+
+                $(document).ready(
+                    function () {
+                        ftn_GetConsultaProcesosAdemanada("GetConsultaTiposProcesosAduana");
+                        ftn_GetConsultaProcesosAdemanada("GetConsultaTiposProcesosTrading");
+                        ftn_GetConsultaProcesosAdemanada("GetConsultaTiposProcesosAduanaTrading");
+                    }
+                );
+
+
+                function ftn_GetConsultaProcesosAdemanada(servicio) {
+                    const xhr = new XMLHttpRequest();
+                    const url = urlWebService + servicio;
+
+                    xhr.onreadystatechange = function () {
+
+                        if (xhr.readyState == XMLHttpRequest.DONE) {
+                            ftn_mostrarResultadoProcesos(xhr.responseText, servicio);
+                        }
+
+                    }
+                    xhr.open("GET", url, true);
+                    xhr.send();
+                }
+
+
+                function ftn_GetConsultaParametrosProcesosAdemanada() {
+                    const xhr = new XMLHttpRequest();
+                    const url = urlWebService + "GetConsultaNumeroParametrosReporteAnomalia";
+
+                    xhr.onreadystatechange = function () {
+
+                        if (xhr.readyState == XMLHttpRequest.DONE) {
+                            ftn_mostrarResultadoParametros(xhr.responseText);
+                        }
+
+                    }
+                    xhr.open("GET", url, true);
+                    xhr.send();
+                }
+
+
+                function ftn_mostrarResultadoProcesos(wsResponseText, serviciox) {
+                    var objResult = JSON.parse(wsResponseText);
+
+                    if (serviciox == "GetConsultaTiposProcesosAduana") {
+                        var info = objResult.GetConsultaTiposProcesosAduanaResult;
+                    } else if (serviciox == "GetConsultaTiposProcesosTrading") {
+                        var info = objResult.GetConsultaTiposProcesosTradingResult;
+                    } else if (serviciox == "GetConsultaTiposProcesosAduanaTrading") {
+                        var info = objResult.GetConsultaTiposProcesosAduanaTradingResult;
+                    }
+
+
+                    var arrayData = JSON.parse(info);
+
+                    var i = 0;
+                    var conse = 1;
+                    var htmlTable = "";
+                    var mitt = 0;
+
+                    if (serviciox == "GetConsultaTiposProcesosAduana") {
+                        if (arrayData.length == 0) {
+
+                            htmlTable = "";
+                            htmlTable = htmlTable + "<p>No hay reportes para esta seccion</p>";
+                            $("#print_data_sec1").append(htmlTable);
+                        }
+                        else {
+
+                            for (i = 0; i < arrayData.length; i++) {
+
+                                htmlTable = "";
+                                htmlTable = htmlTable + "<input type=radio name=id_rep value=" + arrayData[i].ID_REP + ">&nbsp;" + conse + ". " + arrayData[i].NAME + "&nbsp; &nbsp; <br> ";
+                                $("#print_data_sec1").append(htmlTable);
+
+                                conse = conse + 1
+                            }
+                        }
+                    } else if (serviciox == "GetConsultaTiposProcesosTrading") {
+
+
+                        if (arrayData.length == 0) {
+
+                            htmlTable = "";
+                            htmlTable = htmlTable + "<p>No hay reportes para esta seccion</p>";
+                            $("#print_data_sec2").append(htmlTable);
+                        }
+                        else {
+
+                            mitt = ((arrayData.length) / 2);
+                            for (i = 0; i < arrayData.length; i++) {
+
+                                htmlTable = "";
+                                htmlTable = htmlTable + "<input type=radio name=id_rep value=" + arrayData[i].ID_REP + ">&nbsp;" + conse + ". " + arrayData[i].NAME + "&nbsp; &nbsp; <br> ";
+
+                                if (i >= mitt) {
+                                    $("#print_data_sec2_1").append(htmlTable);
+                                } else {
+                                    $("#print_data_sec2").append(htmlTable);
+                                }
+                                conse = conse + 1
+                            }
+
+                            htmlTable = "<input type=radio name=id_rep value='talones'>&nbsp;Talones con seguro<br>";
+                            $("#print_data_sec2_1").append(htmlTable);
+
+                        }
+
+
+                    } else if (serviciox == "GetConsultaTiposProcesosAduanaTrading") {
+
+                        if (arrayData.length == 0) {
+
+                            htmlTable = "";
+                            htmlTable = htmlTable + "<p>No hay reportes para esta seccion</p>";
+                            $("#print_data_sec3").append(htmlTable);
+                        }
+                        else {
+
+                            for (i = 0; i < arrayData.length; i++) {
+
+                                htmlTable = "";
+                                htmlTable = htmlTable + "<input type=radio name=id_rep value=" + arrayData[i].ID_REP + ">&nbsp;" + conse + ". " + arrayData[i].NAME + "&nbsp; &nbsp; <br> ";
+                                $("#print_data_sec3").append(htmlTable);
+
+                                conse = conse + 1
+                            }
+                        }
+
+                    }
+                }
+
+			//< !--ORP: WS AJAX-- >
+            </script>
+
+        </body>
 
         <%
 		'< -- CHG-DESA-27042022-01
